@@ -169,6 +169,11 @@
     initRegisterForm();
     initServicePage();
     initCartPage();
+
+    // Register service worker to localize external assets
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/assets/sw.js").catch(() => {});
+    }
   });
 
   // Expose for other scripts if needed
