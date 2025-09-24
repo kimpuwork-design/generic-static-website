@@ -3,240 +3,122 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SMM Panel Preview</title>
+  <title>SMMFlow · Preview</title>
   <link rel="stylesheet" href="assets/style.css">
-  <style>
-    nav { display: flex; gap: 1rem; align-items: center; justify-content: center; padding: 0.8rem 0; }
-    nav a { color: #fff; text-decoration: none; font-weight: 600; }
-    nav .spacer { flex: 1; }
-    .container { max-width: 1000px; margin: 0 auto; }
-    .card { background: #fff; border-radius: 14px; padding: 1.2rem; box-shadow: 0 6px 24px rgba(0,0,0,0.06); }
-    .alert { padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1rem; }
-    .alert-info { background: #eef7ff; color: #0a5ea8; }
-    .alert-success { background: #ecfbf1; color: #127a44; }
-    .alert-error { background: #ffecec; color: #b61f1f; }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 0.6rem; border-bottom: 1px solid #eee; text-align: left; }
-    .muted { color: #777; }
-    .btn { display: inline-block; padding: 0.6rem 1rem; border-radius: 8px; background: #23272f; color: #fff; text-decoration: none; border: 0; cursor: pointer; }
-    .btn-outline { background: transparent; color: #23272f; border: 1px solid #23272f; }
-    .grid { display: grid; gap: 1rem; grid-template-columns: 1fr 1fr; }
-    input, select, textarea { width: 100%; padding: 0.6rem; border: 1px solid #ddd; border-radius: 8px; }
-    label { font-weight: 600; }
-    .hidden { display: none; }
-    .brand { color: #fff; font-weight: 700; }
-    .badge { background: #445; color: #fff; padding: 0.2rem 0.5rem; border-radius: 6px; font-size: 0.85rem; margin-left: 0.5rem; }
-  </style>
 </head>
 <body>
-<header>
-  <div class="container">
-    <nav>
-      <a href="#home" class="brand">SMM Panel</a>
-      <a href="#login">Login</a>
-      <a href="#register">Register</a>
-      <a href="#dashboard">Dashboard</a>
-      <a href="#services">Services</a>
-      <a href="#orders">Orders</a>
-      <a href="#deposit">Deposit</a>
-      <span class="spacer"></span>
-      <span class="badge">Preview Only</span>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand-box">
+      <div class="logo"></div>
+      <div class="brand-name">SMMFlow</div>
+    </div>
+    <nav class="menu">
+      <a class="menu-item active" href="#">
+        <span class="icon"></span><span>Dashboard</span>
+      </a>
+      <a class="menu-item" href="#">
+        <span class="icon"></span><span>Orders</span>
+      </a>
+      <a class="menu-item" href="#">
+        <span class="icon"></span><span>Services</span>
+      </a>
+      <a class="menu-item" href="#">
+        <span class="icon"></span><span>Add Funds</span>
+      </a>
+      <a class="menu-item" href="#">
+        <span class="icon"></span><span>Support</span>
+      </a>
     </nav>
-  </div>
-</header>
-
-<main class="container">
-  <section id="home" class="card" data-view>
-    <h2>SMM Panel Preview</h2>
-    <div class="alert alert-info">This is a static preview of the panel UI. The full app runs on PHP/MySQL via index.php on cPanel.</div>
-    <p>Features:</p>
-    <ul>
-      <li>Multi-provider support with SMM API v2</li>
-      <li>Wallet, deposits (PayPal IPN), transactions</li>
-      <li>Order placement and automatic status updates via cron</li>
-      <li>Client API for balance, services, add order, status</li>
-      <li>Admin provider management and service synchronization</li>
-    </ul>
-    <p>To use the full panel: upload to cPanel and visit <code>/install/install.php</code>.</p>
-  </section>
-
-  <section id="login" class="card hidden" data-view>
-    <h2>Login</h2>
-    <div class="alert alert-info">Preview form. In production, this posts to index.php?route=login</div>
-    <form>
-      <div class="grid">
-        <div>
-          <label>Email</label>
-          <input type="email" placeholder="user@example.com">
-        </div>
-        <div>
-          <label>Password</label>
-          <input type="password" placeholder="••••••••">
-        </div>
+    <nav class="menu bottom">
+      <div class="menu-item" style="cursor:default;">
+        <span class="icon"></span>
+        <span>Balance: $125.50 USD</span>
       </div>
-      <button class="btn" type="button">Login</button>
-    </form>
-  </section>
+      <a class="menu-item" href="#">
+        <span class="icon"></span><span>Logout</span>
+      </a>
+    </nav>
+  </aside>
 
-  <section id="register" class="card hidden" data-view>
-    <h2>Register</h2>
-    <form>
-      <div class="grid">
-        <div>
-          <label>Email</label>
-          <input type="email" placeholder="newuser@example.com">
-        </div>
-        <div>
-          <label>Password</label>
-          <input type="password" placeholder="••••••••">
-        </div>
+  <main class="content">
+    <h1 class="page-title">Dashboard</h1>
+
+    <div class="metrics">
+      <div class="metric-card">
+        <div class="metric-title">Account Balance</div>
+        <div class="metric-value">$125.50</div>
+        <div class="metric-sub up">↑ +10% vs last month</div>
       </div>
-      <button class="btn" type="button">Create Account</button>
-    </form>
-  </section>
-
-  <section id="dashboard" class="card hidden" data-view>
-    <h2>Dashboard</h2>
-    <p>Welcome, demo@example.com</p>
-    <p>Your API key: <code>DEMOAPIKEY1234567890</code></p>
-    <p class="muted">Use the API to automate orders. See API docs below.</p>
-  </section>
-
-  <section id="services" class="card hidden" data-view>
-    <h2>Services</h2>
-    <p class="muted">Sample catalog synced from providers.</p>
-    <table>
-      <thead><tr><th>Service</th><th>Category</th><th>Provider</th><th>Rate/1k</th><th>Min</th><th>Max</th><th></th></tr></thead>
-      <tbody>
-        <tr>
-          <td>Instagram Followers</td>
-          <td>Instagram</td>
-          <td>Provider A</td>
-          <td>1.2000</td>
-          <td>100</td>
-          <td>10000</td>
-          <td><a class="btn btn-outline" href="#order_new">Order</a></td>
-        </tr>
-        <tr>
-          <td>Twitter Likes</td>
-          <td>Twitter</td>
-          <td>Provider B</td>
-          <td>0.8000</td>
-          <td>50</td>
-          <td>5000</td>
-          <td><a class="btn btn-outline" href="#order_new">Order</a></td>
-        </tr>
-      </tbody>
-    </table>
-  </section>
-
-  <section id="order_new" class="card hidden" data-view>
-    <h2>Place Order</h2>
-    <p><strong>Instagram Followers</strong> · Provider A</p>
-    <p class="muted">Rate per 1000: 1.2000 · Min: 100 · Max: 10000</p>
-    <form>
-      <div>
-        <label>Link</label>
-        <input type="url" placeholder="https://instagram.com/yourprofile">
+      <div class="metric-card">
+        <div class="metric-title">Total Orders</div>
+        <div class="metric-value">342</div>
+        <div class="metric-sub down">↓ -5% vs last month</div>
       </div>
-      <div>
-        <label>Quantity</label>
-        <input type="number" min="100" max="10000" value="1000">
-      </div>
-      <button class="btn" type="button">Place Order</button>
-    </form>
-  </section>
-
-  <section id="orders" class="card hidden" data-view>
-    <h2>Your Orders</h2>
-    <table>
-      <thead><tr><th>ID</th><th>Service</th><th>Qty</th><th>Status</th><th>Charge</th><th>Created</th></tr></thead>
-      <tbody>
-        <tr>
-          <td>#1001</td>
-          <td>Instagram Followers</td>
-          <td>1500</td>
-          <td>processing</td>
-          <td>1.8000</td>
-          <td>2025-09-24 10:15</td>
-        </tr>
-        <tr>
-          <td>#1000</td>
-          <td>Twitter Likes</td>
-          <td>800</td>
-          <td>completed</td>
-          <td>0.6400</td>
-          <td>2025-09-23 17:02</td>
-        </tr>
-      </tbody>
-    </table>
-  </section>
-
-  <section id="deposit" class="card hidden" data-view>
-    <h2>Deposit Funds</h2>
-    <div class="grid">
-      <div>
-        <label>Amount (USD)</label>
-        <input type="number" step="0.01" placeholder="25.00">
-      </div>
-      <div>
-        <label>Method</label>
-        <input type="text" value="PayPal (IPN)" disabled>
+      <div class="metric-card">
+        <div class="metric-title">Pending Orders</div>
+        <div class="metric-value">15</div>
+        <div class="metric-sub pending">⏳ Awaiting processing</div>
       </div>
     </div>
-    <button class="btn" type="button">Create Deposit</button>
 
-    <h3 style="margin-top:1rem;">PayPal Quick Deposit</h3>
-    <p class="muted">IPN endpoint will be <code>/ipn/paypal.php</code> on your domain.</p>
-    <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-      <input type="hidden" name="cmd" value="_xclick">
-      <input type="hidden" name="business" value="business@example.com">
-      <input type="hidden" name="item_name" value="SMM Panel Wallet Deposit">
-      <input type="hidden" name="currency_code" value="USD">
-      <input type="hidden" name="notify_url" value="https://yourdomain.com/ipn/paypal.php">
-      <input type="hidden" name="return" value="/index.php?route=deposit">
-      <input type="hidden" name="custom" value="user_id:1">
-      <input type="number" step="0.01" name="amount" placeholder="Amount">
-      <button class="btn" type="submit">Pay with PayPal</button>
-    </form>
-  </section>
+    <div class="card" style="margin-top:1rem;">
+      <h2>Recent Orders</h2>
+      <table class="table-glass">
+        <thead>
+          <tr>
+            <th>ORDER ID</th>
+            <th>SERVICE</th>
+            <th>QUANTITY</th>
+            <th>STATUS</th>
+            <th>DATE</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>#12345</td>
+            <td>Instagram Followers</td>
+            <td>1,000</td>
+            <td><span class="pill pill-completed">Completed</span></td>
+            <td>2023-08-15</td>
+          </tr>
+          <tr>
+            <td>#12346</td>
+            <td>Twitter Retweets</td>
+            <td>500</td>
+            <td><span class="pill pill-processing">Processing</span></td>
+            <td>2023-08-16</td>
+          </tr>
+          <tr>
+            <td>#12347</td>
+            <td>Facebook Likes</td>
+            <td>2,000</td>
+            <td><span class="pill pill-completed">Completed</span></td>
+            <td>2023-08-17</td>
+          </tr>
+          <tr>
+            <td>#12348</td>
+            <td>YouTube Views</td>
+            <td>5,000</td>
+            <td><span class="pill pill-pending">Pending</span></td>
+            <td>2023-08-18</td>
+          </tr>
+          <tr>
+            <td>#12349</td>
+            <td>TikTok Followers</td>
+            <td>2,500</td>
+            <td><span class="pill pill-cancelled">Cancelled</span></td>
+            <td>2023-08-19</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-  <section id="api_docs" class="card hidden" data-view>
-    <h2>API Documentation</h2>
-    <p>Base: <code>index.php?route=api</code></p>
-    <ul>
-      <li><strong>Balance</strong>: POST <code>?route=api&amp;action=balance</code> → { balance, currency }</li>
-      <li><strong>Services</strong>: POST <code>?route=api&amp;action=services</code> → list</li>
-      <li><strong>Add</strong>: POST <code>?route=api&amp;action=add</code> with <code>service, link, quantity</code> → { order }</li>
-      <li><strong>Status</strong>: POST <code>?route=api&amp;action=status</code> with <code>order</code> → { status, charge }</li>
-    </ul>
-    <pre>
-curl -X POST "https://yourdomain.com/index.php?route=api&amp;action=services" -d "key=YOUR_API_KEY"
-    </pre>
-  </section>
-</main>
-
-<footer>
-  <p>&copy; 2025 SMM Panel · <a href="#api_docs" style="color:#fff;">API</a></p>
-</footer>
-
+    <footer>
+      <p>&copy; 2025 SMMFlow · Preview</p>
+    </footer>
+  </main>
+</div>
 <script src="assets/script.js"></script>
-<script>
-  // Simple view router using hash
-  (function(){
-    const views = Array.from(document.querySelectorAll('[data-view]'));
-    function show(id) {
-      views.forEach(v => v.classList.add('hidden'));
-      const el = document.getElementById(id) || document.getElementById('home');
-      el.classList.remove('hidden');
-    }
-    function onHash() {
-      const id = (location.hash || '#home').replace('#','');
-      show(id);
-    }
-    window.addEventListener('hashchange', onHash);
-    onHash();
-  })();
-</script>
 </body>
 </html>

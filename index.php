@@ -87,6 +87,10 @@ switch ($r) {
         $auth->requireLogin();
         $user = $auth->user();
         $orders = $db->fetchAll("SELECT o.*, s.name AS service_name FROM orders o JOIN services s ON s.id=o.service_id WHERE o.user_id=? ORDER BY o.id DESC LIMIT 10", [$user['id']]);
+        $row = $db->fetch("SELECT COUNT(*) AS c FROM orders WHERE user_id=?", [$user['id']]);
+        $totalOrders = (int)($row['c'] ?? 0);
+        $row2 = $db->fetch("SELECT COUNT(*) AS c FROM orders WHERE user_id=? AND status IN ('pending','processing')", [$user['id']]);
+        $pendingCount = (int)($row2['c'] ?? 0);
         include __DIR__ . '/views/dashboard.php';
         break;
 
