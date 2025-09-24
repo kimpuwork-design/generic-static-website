@@ -1,124 +1,287 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SMMFlow · Preview</title>
-  <link rel="stylesheet" href="assets/style.css">
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SocialBoost - Elevate Your Social Presence</title>
+<link href="data:image/x-icon;base64," rel="icon" type="image/x-icon"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                DEFAULT: "#0A3B95",
+                light: "#1E57C3"
+              },
+              secondary: "#D4AF37",
+              background: {
+                light: "#F0F2F5",
+                dark: "#080C14",
+              },
+              "surface-dark": "rgba(10, 15, 26, 0.5)",
+              "surface-light": "rgba(255, 255, 255, 0.1)",
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.75rem",
+              lg: "1rem",
+              xl: "1.5rem",
+              full: "9999px"
+            },
+            animation: {
+              'pulse-glow': 'pulse-glow 4s infinite ease-in-out',
+              'shimmer': 'shimmer 8s infinite linear',
+              'parallax': 'parallax 20s infinite linear alternate',
+              'fade-in-up': 'fade-in-up 1s ease-out forwards',
+              'subtle-bounce': 'subtle-bounce 1.5s ease-in-out infinite',
+              'liquid-reveal': 'liquid-reveal 1.2s ease-out forwards',
+            },
+            keyframes: {
+              'pulse-glow': {
+                '0%, 100%': { boxShadow: '0 0 20px rgba(212, 175, 55, 0.3), 0 0 30px rgba(13, 64, 165, 0.2)' },
+                '50%': { boxShadow: '0 0 35px rgba(212, 175, 55, 0.5), 0 0 50px rgba(13, 64, 165, 0.4)' },
+              },
+              'shimmer': {
+                '0%': { backgroundPosition: '200% 0' },
+                '100%': { backgroundPosition: '-200% 0' },
+              },
+              'parallax': {
+                '0%': { backgroundPosition: '0% 50%' },
+                '100%': { backgroundPosition: '100% 50%' },
+              },
+              'fade-in-up': {
+                  '0%': { opacity: '0', transform: 'translateY(20px)' },
+                  '100%': { opacity: '1', transform: 'translateY(0)' },
+              },
+              'subtle-bounce': {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-5px)' },
+              },
+               'liquid-reveal': {
+                '0%': { 'clip-path': 'polygon(0 0, 0 0, 0 100%, 0% 100%)', opacity: 0 },
+                '50%': { 'clip-path': 'polygon(0 0, 100% 0, 100% 100%, 0 100%)', opacity: 1 },
+                '100%': { 'clip-path': 'polygon(100% 0, 100% 0, 100% 100%, 100% 100%)', opacity: 1 },
+              }
+            }
+          },
+        },
+      };
+    </script>
+<style>
+      :root {
+        --tw-color-surface-dark: rgba(10, 15, 26, 0.5);
+        --tw-color-surface-light: rgba(255, 255, 255, 0.1);
+      }
+      .bg-glass {
+        -webkit-backdrop-filter: blur(16px);
+        backdrop-filter: blur(16px);
+        border: 1px solid;
+      }
+      .dark .bg-glass {
+        background-color: var(--tw-color-surface-dark);
+        border-color: rgba(255, 255, 255, 0.1);
+      }
+      .light .bg-glass {
+        background-color: var(--tw-color-surface-light);
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+      .liquid-gradient {
+        background: radial-gradient(circle at 15% 25%, rgba(10, 59, 149, 0.4) 0%, transparent 35%),
+                    radial-gradient(circle at 85% 75%, rgba(212, 175, 55, 0.25) 0%, transparent 40%);
+        background-size: 200% 200%;
+        animation: parallax 30s infinite linear alternate;
+      }
+      .shimmer-effect::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        padding: 1px;
+        background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.2), transparent 70%);
+        background-size: 200% 100%;
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        animation: shimmer 8s infinite;
+      }
+      .text-gold-gradient {
+          background-image: linear-gradient(120deg, #F0E68C, #D4AF37, #B8860B);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+      }
+      .animate-on-load {
+        opacity: 0;
+        animation-fill-mode: forwards;
+      }
+      .animate-delay-200 { animation-delay: 200ms; }
+      .animate-delay-400 { animation-delay: 400ms; }
+      .animate-delay-600 { animation-delay: 600ms; }
+      .animate-delay-800 { animation-delay: 800ms; }
+    </style>
 </head>
-<body>
-<div class="app">
-  <aside class="sidebar">
-    <div class="brand-box">
-      <div class="logo"></div>
-      <div class="brand-name">SMMFlow</div>
-    </div>
-    <nav class="menu">
-      <a class="menu-item active" href="#">
-        <span class="icon"></span><span>Dashboard</span>
-      </a>
-      <a class="menu-item" href="#">
-        <span class="icon"></span><span>Orders</span>
-      </a>
-      <a class="menu-item" href="#">
-        <span class="icon"></span><span>Services</span>
-      </a>
-      <a class="menu-item" href="#">
-        <span class="icon"></span><span>Add Funds</span>
-      </a>
-      <a class="menu-item" href="#">
-        <span class="icon"></span><span>Support</span>
-      </a>
-    </nav>
-    <nav class="menu bottom">
-      <div class="menu-item" style="cursor:default;">
-        <span class="icon"></span>
-        <span>Balance: $125.50 USD</span>
-      </div>
-      <a class="menu-item" href="#">
-        <span class="icon"></span><span>Logout</span>
-      </a>
-    </nav>
-  </aside>
-
-  <main class="content">
-    <h1 class="page-title">Dashboard</h1>
-
-    <div class="metrics">
-      <div class="metric-card">
-        <div class="metric-title">Account Balance</div>
-        <div class="metric-value">$125.50</div>
-        <div class="metric-sub up">↑ +10% vs last month</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-title">Total Orders</div>
-        <div class="metric-value">342</div>
-        <div class="metric-sub down">↓ -5% vs last month</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-title">Pending Orders</div>
-        <div class="metric-value">15</div>
-        <div class="metric-sub pending">⏳ Awaiting processing</div>
-      </div>
-    </div>
-
-    <div class="card" style="margin-top:1rem;">
-      <h2>Recent Orders</h2>
-      <table class="table-glass">
-        <thead>
-          <tr>
-            <th>ORDER ID</th>
-            <th>SERVICE</th>
-            <th>QUANTITY</th>
-            <th>STATUS</th>
-            <th>DATE</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>#12345</td>
-            <td>Instagram Followers</td>
-            <td>1,000</td>
-            <td><span class="pill pill-completed">Completed</span></td>
-            <td>2023-08-15</td>
-          </tr>
-          <tr>
-            <td>#12346</td>
-            <td>Twitter Retweets</td>
-            <td>500</td>
-            <td><span class="pill pill-processing">Processing</span></td>
-            <td>2023-08-16</td>
-          </tr>
-          <tr>
-            <td>#12347</td>
-            <td>Facebook Likes</td>
-            <td>2,000</td>
-            <td><span class="pill pill-completed">Completed</span></td>
-            <td>2023-08-17</td>
-          </tr>
-          <tr>
-            <td>#12348</td>
-            <td>YouTube Views</td>
-            <td>5,000</td>
-            <td><span class="pill pill-pending">Pending</span></td>
-            <td>2023-08-18</td>
-          </tr>
-          <tr>
-            <td>#12349</td>
-            <td>TikTok Followers</td>
-            <td>2,500</td>
-            <td><span class="pill pill-cancelled">Cancelled</span></td>
-            <td>2023-08-19</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <footer>
-      <p>&copy; 2025 SMMFlow · Preview</p>
-    </footer>
-  </main>
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-700 dark:text-gray-300 antialiased">
+<div class="relative min-h-screen w-full overflow-x-hidden">
+<div class="absolute inset-0 liquid-gradient -z-10"></div>
+<div class="absolute inset-0 -z-20 opacity-10 dark:opacity-5 animate-parallax" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCHzopeaWoVx4JYAgkC9PcIBTcu_748SX9sZz0QMpd4gu4vpURi8stidCUvkqk0RrsI6qqc0KKYscr7JkaPoCr1cwFXLzQFRL6r-ITIMFyjpk03LK6t-0CxCWbeRdih9anXAkQK6oWX3IZ-kIWAeuIRhVSP7sr2kozz2MXw2wOYuTXLw3wt0BNMw_gf2bup2ar-Ewk4hcPghlxdGE-fDVyU70UmGMzo3VD1qanzpWrcqvEkgZF-mR31AXSAqvHz2kE7lR_eT4uWoHU'); background-size: cover;"></div>
+<div class="relative z-10 flex h-full min-h-screen grow flex-col">
+<header class="sticky top-0 z-50 bg-glass/80 px-4 sm:px-10 py-3 animate-fade-in-up animate-on-load">
+<div class="mx-auto flex max-w-7xl items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="text-primary-light h-10 w-10 transition-transform duration-300 hover:scale-110 hover:rotate-6">
+<svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path class="text-primary" d="M24 46C19.5817 46 15.2551 44.7077 11.636 42.2916C8.01695 39.8755 5.25583 36.4697 3.75168 32.5C2.24754 28.5303 2.07179 24.1687 3.25413 20.0076C4.43647 15.8466 6.91892 12.1121 10.3431 9.65685C13.7673 7.2016 18.0143 6 22.4183 6C26.8223 6 31.0693 7.2016 34.4935 9.65685C37.9177 12.1121 40.3999 15.8466 41.5823 20.0076C42.7646 24.1687 42.5889 28.5303 41.0847 32.5C39.5806 36.4697 36.8195 39.8755 33.1997 42.2916C29.5806 44.7077 25.254 46 24 46V24L24 46Z" fill="currentColor"></path>
+<path d="M36 24C36 27.1826 34.7357 30.2353 32.4853 32.4853C30.2353 34.7357 27.1826 36 24 36C20.8174 36 17.7647 34.7357 15.5147 32.4853C13.2643 30.2353 12 27.1826 12 24C12 18.4772 16.4772 14 22 14H24C30.6274 14 36 19.3726 36 26V24Z" fill="#D4AF37"></path>
+</svg>
 </div>
-<script src="assets/script.js"></script>
-</body>
-</html>
+<h2 class="text-2xl font-bold text-gray-900 dark:text-white transition-colors duration-300 hover:text-secondary">SocialBoost</h2>
+</div>
+<nav class="hidden items-center gap-10 md:flex">
+<a class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-secondary dark:hover:text-secondary transition-all duration-300 hover:translate-y-[-2px]" href="index.php?route=services">Services</a>
+<a class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-secondary dark:hover:text-secondary transition-all duration-300 hover:translate-y-[-2px]" href="#">Pricing</a>
+<a class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-secondary dark:hover:text-secondary transition-all duration-300 hover:translate-y-[-2px]" href="#">About Us</a>
+<a class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-secondary dark:hover:text-secondary transition-all duration-300 hover:translate-y-[-2px]" href="index.php?route=api_docs">Contact</a>
+</nav>
+<div class="flex items-center gap-4">
+<a class="flex h-11 items-center justify-center overflow-hidden rounded-full bg-gradient-to-r from-primary to-primary-light px-7 text-sm font-bold text-white shadow-lg shadow-primary/30 transition-all duration-300 hover:shadow-primary/50 hover:scale-105 active:scale-95 animate-pulse-glow" href="index.php?route=register">
+<span>Get Started</span>
+</a>
+<button class="md:hidden p-2 rounded-full text-gray-700 dark:text-gray-300 hover:bg-primary/10 dark:hover:bg-primary/20 transition-all duration-300 hover:rotate-90">
+<span class="material-symbols-outlined"> menu </span>
+</button>
+</div>
+</div>
+</header>
+<main class="flex flex-1 flex-col">
+<section class="relative flex min-h-[calc(100vh-80px)] items-center justify-center px-4 py-20 overflow-hidden">
+<div class="absolute inset-0 -z-10">
+<div class="absolute -left-1/4 -top-1/4 h-1/2 w-1/2 rounded-full bg-glass opacity-30 animate-pulse-glow shadow-2xl"></div>
+<div class="absolute -bottom-1/4 -right-1/4 h-2/3 w-2/3 rounded-full bg-glass opacity-20 animate-pulse-glow delay-2000 shadow-2xl"></div>
+</div>
+<div class="grid max-w-7xl grid-cols-1 items-center gap-12 lg:grid-cols-2">
+<div class="text-center lg:text-left">
+<h1 class="text-6xl font-black tracking-tighter text-gray-900 dark:text-white sm:text-8xl animate-fade-in-up animate-on-load">
+            Elevate Your <span class="text-gold-gradient">Social Presence</span>
+</h1>
+<p class="mt-6 max-w-xl mx-auto lg:mx-0 text-lg text-gray-500 dark:text-gray-400 sm:text-xl animate-fade-in-up animate-on-load animate-delay-200">
+                Experience the power of SocialBoost, the premier SMM panel designed to amplify your social media impact with cutting-edge strategies and seamless execution.
+              </p>
+<div class="mt-12 flex flex-wrap justify-center lg:justify-start gap-4 animate-fade-in-up animate-on-load animate-delay-400">
+<a class="flex h-14 items-center justify-center overflow-hidden rounded-full bg-gradient-to-r from-primary to-primary-light px-10 text-base font-bold text-white shadow-lg shadow-primary/40 transition-all duration-300 hover:shadow-xl hover:shadow-primary/50 hover:scale-105 active:scale-95 animate-pulse-glow" href="index.php?route=register">
+<span>Get Started Now</span>
+</a>
+<a class="relative flex h-14 items-center justify-center overflow-hidden rounded-full border border-gray-300 dark:border-gray-700 bg-white/10 dark:bg-black/20 px-10 text-base font-bold text-gray-800 dark:text-gray-200 transition-all duration-300 hover:scale-105 active:scale-95 hover:border-secondary/50 dark:hover:border-secondary shimmer-effect" href="index.php?route=services">
+<span>View Services</span>
+</a>
+</div>
+</div>
+<div class="relative h-96 w-full max-w-lg mx-auto lg:h-[500px] animate-fade-in-up animate-on-load animate-delay-600">
+<div class="absolute top-0 left-1/4 w-full h-full bg-glass rounded-xl transform -rotate-12 transition-all duration-500 hover:rotate-0 hover:scale-105">
+<img alt="Social media engagement" class="absolute inset-0 h-full w-full object-cover rounded-xl opacity-70 mix-blend-luminosity" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHVu553dffuhFK7a9Io8hVDozb9ExLWXXCw_07t7wbUx8vyI6MNxQuPWsmhsJRgjityAgDofgfVfB505ffZXjgMCtXon4pMk25ZypaJs5gbzEDNM80FiJ5iAKw1ZymMS9sexJdGsSacu2jQL9-LekV7FJuN6QI7lJZox9bsoKBNoHoQ5_imJZIbc4SVUr1bCZ6Hh7dVG0dAfgUcy02SGYS2qc4mPPftaCJmjhiPv48cft1qfgEzJwiQXK-q0-Ud0Be0JZX2a0Yv2E"/>
+</div>
+<div class="absolute top-0 left-0 w-full h-full bg-glass rounded-xl transform rotate-6 shadow-2xl shadow-primary/20 dark:shadow-secondary/10 transition-all duration-500 hover:rotate-0 hover:scale-105">
+<img alt="Social media icons" class="absolute inset-0 h-full w-full object-cover rounded-xl opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAA6RY2HeCG3RzofSYOFj0detsMELOx9u-ABjFyqg6R8dWFZbWMPF_gdaFxKZ2Hg6_Q-mgupymbFBSLiEa9eo9tYZQAn1l5-MlWXiHkuDW8a3414yEwfxLkmUBSQMNwCmmLhDbnykCsxcfDCa-g73vz7NOXLqRzsFvs1BFjMt9MAKghyepbB3l151ifUN5cOqBjUn6uqlE-hDfJYqBp6xie6VPsDGMm27FDkMVq9G_gP9CI-LPbsnO0PRwVeA1GX-cm9fBxfX74CFo"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/50 to-transparent rounded-xl"></div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-24 sm:py-32">
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+<div class="mx-auto max-w-2xl text-center animate-fade-in-up animate-on-load">
+<h2 class="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl">Why Choose <span class="text-gold-gradient">SocialBoost?</span></h2>
+<p class="mt-4 text-lg text-gray-500 dark:text-gray-400">Discover the advantages of partnering with SocialBoost for your social media management needs.</p>
+</div>
+<div class="mt-20 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+<div class="relative flex flex-col gap-6 rounded-xl bg-glass p-8 shimmer-effect transition-all duration-300 hover:shadow-2xl hover:shadow-primary/20 dark:hover:shadow-secondary/10 hover:-translate-y-2 overflow-hidden animate-fade-in-up animate-on-load animate-delay-200">
+<img alt="Security" class="absolute top-0 left-0 w-full h-32 object-cover opacity-20 dark:opacity-10 pointer-events-none" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgdrD9lJs0VA7u1ysbU3PdcpuZXo-0-COt4hBPcULY-uonU3ZlPaJs_FyZ8FCht7ThgI-kMW8iLXgSzgABdnKkm68ns8W1nsO-VPIfXYGdxBNV5DpNRF4xNKW6G-q6EKgBBpN1V0gtPR9BMsMQWySi9yxncaiA9ydUtAmsUfkSMG5mqPoxggGDoD5fOtcB4BIludzc1uXawekpXP4rhvOGI5I9TzGrJxR9ZJGnaTYkcv1MIXH64mFgBemnaPXYiUmohf7T0xW7xG0"/>
+<div class="flex h-14 w-14 items-center justify-center rounded-lg bg-primary/10 text-secondary z-10 transition-transform duration-300 group-hover:scale-110">
+<span class="material-symbols-outlined text-4xl group-hover:animate-subtle-bounce"> security </span>
+</div>
+<div class="flex flex-col gap-1 z-10">
+<h3 class="text-xl font-bold text-gray-900 dark:text-white transition-colors duration-300 group-hover:text-secondary">Secure &amp; Reliable</h3>
+<p class="text-base text-gray-600 dark:text-gray-400">
+                      Our platform ensures the highest level of security and reliability, protecting your data and delivering consistent results.
+                    </p>
+</div>
+</div>
+<div class="relative flex flex-col gap-6 rounded-xl bg-glass p-8 shimmer-effect transition-all duration-300 hover:shadow-2xl hover:shadow-primary/20 dark:hover:shadow-secondary/10 hover:-translate-y-2 overflow-hidden animate-fade-in-up animate-on-load animate-delay-400 group">
+<img alt="Team of experts" class="absolute top-0 left-0 w-full h-32 object-cover opacity-20 dark:opacity-10 pointer-events-none" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTHsKbeDT1WJXMjSy40t8JHZnjTg2mUdo_7BrtEACBZA6sGBmOA7stm1MjPG3cSLiEQwfzvNTcrasfHafHmDWGCxKSfg_y-wXZb-iKz9PB9AF-PIzKCpq2lMpdOTIKzk4-DRdWuLwOTo_YUTJY3-nj-QG6Lx0XJraYZzn5pDJYFAwqIcDRQeRfGyJA8ZoKs20d3Od9zt5Zya8k44M6SSmGif6nZyPmbIzgIQMrN3Lb1ExFWwBJG6y-FBw82TPV16Kdkm7e4KD4wcw"/>
+<div class="flex h-14 w-14 items-center justify-center rounded-lg bg-primary/10 text-secondary z-10 transition-transform duration-300 group-hover:scale-110">
+<span class="material-symbols-outlined text-4xl group-hover:animate-subtle-bounce"> groups </span>
+</div>
+<div class="flex flex-col gap-1 z-10">
+<h3 class="text-xl font-bold text-gray-900 dark:text-white transition-colors duration-300 group-hover:text-secondary">Expert Team</h3>
+<p class="text-base text-gray-600 dark:text-gray-400">
+                      Benefit from the expertise of our seasoned professionals who are dedicated to optimizing your social media performance.
+                    </p>
+</div>
+</div>
+<div class="relative flex flex-col gap-6 rounded-xl bg-glass p-8 shimmer-effect transition-all duration-300 hover:shadow-2xl hover:shadow-primary/20 dark:hover:shadow-secondary/10 hover:-translate-y-2 overflow-hidden animate-fade-in-up animate-on-load animate-delay-600 group">
+<img alt="Fast delivery rocket" class="absolute top-0 left-0 w-full h-32 object-cover opacity-20 dark:opacity-10 pointer-events-none" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxKuhC1x3csylLPSrUccwktIZAaZQ52pKuJCyV6vm4usgVTfXUCPAudIXQueupNgHuMm-3m4CiI_IM2tRJ0hlTYsBZ0PCQCtKVOjHjgjz0LTi2nh_Bkzj7RZhvmDtjO8zXqMy-RAbH122Sj3BbHFUzgoBo5ZCpj87sszJavzrA3JESGd4QP5PIo5fjKB4ktrSk_abb9-mHbSeP35eja3OHwKlvhZ0puOmghVPly4QAPEmCLsn9Fu1t7_GmbV4_OdMF5q_VhlMQuLA"/>
+<div class="flex h-14 w-14 items-center justify-center rounded-lg bg-primary/10 text-secondary z-10 transition-transform duration-300 group-hover:scale-110">
+<span class="material-symbols-outlined text-4xl group-hover:animate-subtle-bounce"> bolt </span>
+</div>
+<div class="flex flex-col gap-1 z-10">
+<h3 class="text-xl font-bold text-gray-900 dark:text-white transition-colors duration-300 group-hover:text-secondary">Fast Delivery</h3>
+<p class="text-base text-gray-600 dark:text-gray-400">
+                      Experience rapid and efficient service delivery, ensuring your campaigns are launched and executed promptly.
+                    </p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="bg-primary/5 dark:bg-primary/5 py-24 sm:py-32 relative overflow-hidden">
+<div class="absolute inset-0 z-0">
+<img alt="Abstract social media background" class="w-full h-full object-cover opacity-10 dark:opacity-5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAa2PL7OsNUx5fHtC9i4xb7ALQlhJNP7rxEWn2Gi1eJEgOeHj6L3tMwPOritFTHUjjjaejqvOJX6AEornZq7pZxdd8U8KANn8Wbe_34mZj0CbdZmI5_wv1A36eUckmUySqKHEWFXDGfBUGwZDRwLc6dwc4bUuFEdaIIfBJTl4-CU0dwMS0HiK13lOAE8_U_kItjENgapHUtdfnttUs-51sjw7z9ngzO1jsAasxxhe_UZCugGfu2C7KGYiBzCgpBBK9F9Pqo53LhNnc"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background-light dark:from-background-dark to-transparent"></div>
+</div>
+<div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+<div class="mx-auto max-w-2xl text-center animate-fade-in-up animate-on-load">
+<h2 class="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl">Ready to Transform Your Social Media Strategy?</h2>
+<p class="mt-4 text-lg text-gray-500 dark:text-gray-400 animate-fade-in-up animate-on-load animate-delay-200">
+                  Explore our comprehensive suite of services and discover how SocialBoost can help you achieve your social media goals.
+                </p>
+<div class="mt-10 animate-fade-in-up animate-on-load animate-delay-400">
+<a class="flex h-14 w-auto mx-auto max-w-xs items-center justify-center overflow-hidden rounded-full bg-gradient-to-r from-primary to-primary-light px-10 text-base font-bold text-white shadow-lg shadow-primary/40 transition-all duration-300 hover:shadow-xl hover:shadow-primary/50 hover:scale-105 active:scale-95 animate-pulse-glow" href="index.php?route=services">
+<span>View All Services</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer class="border-t border-gray-200/50 dark:border-gray-800/50 bg-background-light dark:bg-background-dark">
+<div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+<div class="flex flex-col items-center justify-between gap-6 md:flex-row animate-fade-in-up animate-on-load">
+<div class="flex flex-wrap justify-center gap-x-6 gap-y-2 md:order-2">
+<a class="text-sm text-gray-500 dark:text-gray-400 hover:text-secondary dark:hover:text-secondary transition-all duration-300 hover:translate-y-[-2px]" href="#">Terms of Service</a>
+<a class="text-sm text-gray-500 dark:text-gray-400 hover:text-secondary dark:hover:text-secondary transition-all duration-300 hover:translate-y-[-2px]" href="#">Privacy Policy</a>
+<a class="text-sm text-gray-500 dark:text-gray-400 hover:text-secondary dark:hover:text-secondary transition-all duration-300 hover:translate-y-[-2px]" href="index.php?route=api_docs">Contact Us</a>
+</div>
+<p class="text-sm text-gray-500 dark:text-gray-400 md:order-1 transition-colors duration-300 hover:text-gray-600 dark:hover:text-gray-300">© 2025 SocialBoost. All rights reserved.</p>
+</div>
+</div>
+</footer>
+</div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const animatedElements = document.querySelectorAll('.animate-on-load');
+        animatedElements.forEach((el) => {
+           if(el.classList.contains('animate-fade-in-up')) {
+               el.style.animationName = 'fade-in-up';
+           }
+        });
+    });
+</script>
+</body></html>
