@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Service — OG Provider Clone</title>
+  <link rel="stylesheet" href="../assets/style.css">
+  <style>
+    .breadcrumb { margin-bottom: 0.8rem; font-size: 0.95rem; }
+    .service-hero { display:flex; align-items:center; gap:0.8rem; margin-bottom: 0.6rem; }
+    .service-body { display:grid; grid-template-columns: 1.2fr 0.8fr; gap:1rem; }
+    .panel { background:#fff; border:1px solid #e5e7eb; border-radius:14px; padding:1rem; }
+    .panel h3 { margin-bottom: 0.5rem; }
+    .field { display:grid; gap:0.35rem; margin-bottom: 0.7rem; }
+    .input { padding: 0.6rem 0.7rem; border-radius: 10px; border: 1px solid #e5e7eb; font-size: 1rem; }
+    .muted { color:#6b7280; }
+    @media (max-width: 780px) { .service-body { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <div class="brand">
+        <a href="/"><img id="brandLogo" class="brand-logo" src="https://cs1.socpanel.com/cs1/panel_logos/2LZexkl6PJSuDMiYkBEQHj1HLoQhCckfctYMEzVr.png" alt="OG Provider" /></a>
+      </div>
+      <nav class="nav">
+        <a class="btn btn--ghost" href="/">Home</a>
+        <a class="btn btn--primary" href="/order">Fast order</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="breadcrumb"><a href="/order">Order</a> · <span id="crumbTitle">Service</span></div>
+    <div class="service-hero">
+      <img id="icon" src="" width="32" height="32" alt="">
+      <h1 id="title">Service</h1>
+    </div>
+
+    <div class="service-body">
+      <section class="panel">
+        <h3>Description</h3>
+        <p id="desc" class="muted">Loading details...</p>
+        <ul id="bullets" class="muted">
+          <li>Delivery: varies by service</li>
+          <li>Guarantee: see service details</li>
+          <li id="priceItem">Starting price: —</li>
+        </ul>
+      </section>
+      <aside class="panel">
+        <h3>Place order</h3>
+        <form id="orderForm">
+          <div class="field">
+            <label for="link">Link</label>
+            <input id="link" class="input" type="url" placeholder="https://..." required>
+          </div>
+          <div class="field">
+            <label for="quantity">Quantity</label>
+            <input id="quantity" class="input" type="number" min="1" step="1" value="100">
+          </div>
+          <button class="btn btn--primary" type="submit" style="width:100%;">Submit</button>
+        </form>
+        <p class="muted" style="margin-top:0.5rem;">Static demo page. No real order will be placed.</p>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    <p>Unofficial clone for demonstration purposes. All trademarks and images belong to their respective owners.</p>
+  </footer>
+
+  <script src="../assets/services.js"></script>
+  <script>
+    function getParam(name) {
+      const url = new URL(location.href);
+      return url.searchParams.get(name) || "";
+    }
+    function initService() {
+      const slug = getParam("slug");
+      const s = (window.SERVICES || []).find(x => x.id === slug);
+      if (!s) {
+        document.getElementById("title").textContent = "Service not found";
+        document.getElementById("desc").textContent = "The requested service does not exist in this static demo.";
+        document.getElementById("icon").src = "https://ogprovider.com/ssr-static/images/all-networks.svg";
+        document.getElementById("crumbTitle").textContent = "Not found";
+        document.getElementById("priceItem").textContent = "Starting price: —";
+        return;
+      }
+      document.title = s.title + " — OG Provider Clone";
+      document.getElementById("title").textContent = s.title;
+      document.getElementById("crumbTitle").textContent = s.title;
+      document.getElementById("icon").src = s.icon;
+      document.getElementById("icon").alt = s.title;
+      document.getElementById("desc").textContent = "Static demo page for " + s.title + ".";
+      document.getElementById("priceItem").textContent = "Starting price: " + (s.price || "—");
+
+      // simple form tuning per category
+      const link = document.getElementById("link");
+      const qty = document.getElementById("quantity");
+      if (s.category === "youtube") {
+        link.placeholder = "https://www.youtube.com/@yourchannel or video URL";
+        qty.min = 50; qty.step = 50; qty.value = 500;
+      } else if (s.category === "tiktok") {
+        link.placeholder = "https://www.tiktok.com/@user/video/...";
+        qty.min = 10; qty.step = 10; qty.value = 100;
+      } else if (s.category === "instagram") {
+        link.placeholder = "https://www.instagram.com/p/...";
+        qty.min = 100; qty.step = 100; qty.value = 1000;
+      } else if (s.category === "telegram" || s.category === "telegram-premium") {
+        link.placeholder = "https://t.me/yourchannel/123";
+        qty.min = 100; qty.step = 100; qty.value = 1000;
+      } else if (s.category === "web-traffic") {
+        link.placeholder = "https://example.com";
+        qty.min = 100; qty.step = 100; qty.value = 1000;
+      }
+
+      document.getElementById("orderForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        alert("This is a static demo. No order submitted.");
+      });
+    }
+    document.addEventListener("DOMContentLoaded", initService);
+  </script>
+</body>
+</html>
