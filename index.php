@@ -157,6 +157,12 @@ switch ($r) {
         include __DIR__ . '/views/deposit.php';
         break;
 
+    case 'forgot':
+        // Forgot password (UI only for now)
+        $use_auth_layout = true;
+        include __DIR__ . '/views/forgot.php';
+        break;
+
     case 'admin_providers':
         $auth->requireAdmin();
         if (is_post()) {
@@ -251,4 +257,8 @@ switch ($r) {
 }
 
 $content = ob_get_clean();
-include __DIR__ . '/views/layout.php';
+$layoutFile = __DIR__ . '/views/layout.php';
+if (!empty($use_auth_layout)) {
+    $layoutFile = __DIR__ . '/views/layout_auth.php';
+}
+include $layoutFile;
