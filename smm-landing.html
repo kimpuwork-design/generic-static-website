@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <title>SocialBoost · Elevate Your Social Presence</title>
+  <title>SocialBoost · SMM Panel</title>
   <link href="https://fonts.googleapis.com" rel="preconnect"/>
   <link crossorigin href="https://fonts.gstatic.com" rel="preconnect"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&amp;display=swap" rel="stylesheet"/>
@@ -28,10 +28,7 @@
             shimmer: "shimmer 8s linear infinite",
           },
           keyframes: {
-            float: {
-              "0%, 100%": { transform: "translateY(0)"},
-              "50%": { transform: "translateY(-14px)"},
-            },
+            float: { "0%, 100%": { transform: "translateY(0)"}, "50%": { transform: "translateY(-14px)"} },
             pulseGlow: {
               "0%,100%": { boxShadow: "0 0 20px rgba(212,175,55,.25), 0 0 30px rgba(13,64,165,.20)" },
               "50%": { boxShadow: "0 0 35px rgba(212,175,55,.45), 0 0 50px rgba(13,64,165,.36)" },
@@ -63,7 +60,6 @@
 </head>
 <body class="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200 antialiased">
   <div class="relative min-h-screen w-full overflow-x-hidden">
-    <!-- liquid gradient background -->
     <div class="absolute inset-0 -z-20 pointer-events-none" style="
       background:
         radial-gradient(1000px 500px at 10% 8%, rgba(10,59,149,.30), transparent 60%),
@@ -73,7 +69,7 @@
       animation: shimmer 28s linear infinite;
     "></div>
 
-    <!-- Navbar -->
+    <!-- SMM-only Navbar -->
     <header class="sticky top-0 z-50">
       <div class="mx-auto max-w-7xl px-4 sm:px-8">
         <nav class="mt-4 mb-4 flex items-center justify-between rounded-2xl bg-glass/70 px-4 py-3">
@@ -111,25 +107,25 @@
             </p>
             <div class="mt-8 flex flex-wrap gap-4 reveal">
               <a href="/login/signup" class="relative rounded-full bg-gradient-to-r from-primary to-primary-light px-8 py-3 text-base font-bold text-white shadow-xl shadow-primary/30 hover:shadow-primary/50 transition transform hover:scale-[1.04] active:scale-95">
-                Start Free
+                Create Account
               </a>
               <a href="index.php?route=services" class="relative rounded-full border border-white/30 bg-white/10 dark:bg-black/20 px-8 py-3 text-base font-bold text-gray-900 dark:text-gray-100 hover:border-secondary/60 shimmer-outline">
-                View Services
+                Browse Services
               </a>
             </div>
 
             <div class="mt-10 grid grid-cols-3 gap-6">
               <div class="rounded-2xl bg-glass p-4 text-center reveal">
-                <div class="text-3xl font-extrabold" data-count="125">0</div>
-                <div class="text-xs mt-1">Active Providers</div>
+                <div class="text-3xl font-extrabold" data-count="8">0</div>
+                <div class="text-xs mt-1">Providers</div>
               </div>
               <div class="rounded-2xl bg-glass p-4 text-center reveal">
-                <div class="text-3xl font-extrabold" data-count="342">0</div>
-                <div class="text-xs mt-1">Total Orders</div>
+                <div class="text-3xl font-extrabold" data-count="320">0</div>
+                <div class="text-xs mt-1">Services</div>
               </div>
               <div class="rounded-2xl bg-glass p-4 text-center reveal">
-                <div class="text-3xl font-extrabold" data-count="98">0</div>
-                <div class="text-xs mt-1">Service Categories</div>
+                <div class="text-3xl font-extrabold" data-count="12">0</div>
+                <div class="text-xs mt-1">Categories</div>
               </div>
             </div>
           </div>
@@ -138,46 +134,77 @@
             <div class="absolute -left-6 -top-4 w-[70%] h-[70%] rounded-2xl bg-glass animate-float"></div>
             <div class="absolute right-0 top-10 w-[72%] h-[72%] rounded-2xl bg-glass shadow-2xl shadow-primary/30 animate-float" style="animation-delay:.9s"></div>
             <div class="absolute inset-0 rounded-2xl overflow-hidden">
-              <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAA6RY2HeCG3RzofSYOFj0detsMELOx9u-ABjFyqg6R8dWFZbWMPF_gdaFxKZ2Hg6_Q-mgupymbFBSLiEa9eo9tYZQAn1l5-MlWXiHkuDW8a3414yEwfxLkmUBSQMNwCmmLhDbnykCsxcfDCa-g73vz7NOXLqRzsFvs1BFjMt9MAKghyepbB3l151ifUN5cOqBjUn6uqlE-hDfJYqBp6xie6VPsDGMm27FDkMVq9G_gP9CI-LPbsnO0PRwVeA1GX-cm9fBxfX74CFo" alt="Social media collage" class="w-full h-full object-cover opacity-80 mix-blend-luminosity">
+              <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAA6RY2HeCG3RzofSYOFj0detsMELOx9u-ABjFyqg6R8dWFZbWMPF_gdaFxKZ2Hg6_Q-mgupymbFBSLiEa9eo9tYZQAn1l5-MlWXiHkuDW8a3414yEwfxLkmUBSQMNwCmmLhDbnykCsxcfDCa-g73vz7NOXLqRzsFvs1BFjMt9MAKghyepbB3l151ifUN5cOqBjUn6uqlE-hDfJYqBp6xie6VPsDGMm27FDkMVq9G_gP9CI-LPbsnO0PRwVeA1GX-cm9fBxfX74CFo" alt="Social collage" class="w-full h-full object-cover opacity-80 mix-blend-luminosity">
               <div class="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent"></div>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- Features -->
+      <!-- Core SMM Features -->
       <section class="px-4 sm:px-8 py-16">
         <div class="mx-auto max-w-7xl text-center">
-          <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight reveal">Built for Speed and Scale</h2>
-          <p class="mt-4 text-gray-600 dark:text-gray-300 reveal">No Composer, cPanel friendly. Sync services, place orders, deposits, and client API.</p>
+          <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight reveal">Everything you need to run SMM</h2>
+          <p class="mt-4 text-gray-600 dark:text-gray-300 reveal">Provider sync, wallet deposits, ordering, refunds, and a simple API—no Composer required.</p>
           <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <div class="relative rounded-2xl bg-glass p-6 reveal">
               <div class="h-12 w-12 rounded-xl bg-gradient-to-br from-secondary/80 to-primary/70 text-white grid place-items-center mb-4">
                 <span class="material-symbols-outlined">verified</span>
               </div>
               <h3 class="font-bold">Secure Wallet</h3>
-              <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">Balances, transactions, PayPal IPN deposits and refunds.</p>
+              <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">Balances, transactions, deposits via PayPal IPN. Refunds handled automatically.</p>
             </div>
             <div class="relative rounded-2xl bg-glass p-6 reveal">
-              <div class="h-12 w-12 rounded-xl bg-gradient-to-br from-secondary/80 to-primary/70 text:white grid place-items-center mb-4">
+              <div class="h-12 w-12 rounded-xl bg-gradient-to-br from-secondary/80 to-primary/70 text-white grid place-items-center mb-4">
                 <span class="material-symbols-outlined">hub</span>
               </div>
               <h3 class="font-bold">Multi‑Provider</h3>
-              <p class="mt-2 text-sm">SMM API v2 compatible. Sync catalogs with pricing and markup.</p>
+              <p class="mt-2 text-sm">SMM API v2 compatible. Sync catalogs with pricing and optional markup.</p>
             </div>
             <div class="relative rounded-2xl bg-glass p-6 reveal">
-              <div class="h-12 w-12 rounded-xl bg-gradient-to-br from-secondary/80 to-primary/70 text:white grid place-items-center mb-4">
+              <div class="h-12 w-12 rounded-xl bg-gradient-to-br from-secondary/80 to-primary/70 text-white grid place-items-center mb-4">
                 <span class="material-symbols-outlined">hourglass_top</span>
               </div>
-              <h3 class="font-bold">Auto Updates</h3>
+              <h3 class="font-bold">Auto Status</h3>
               <p class="mt-2 text-sm">Cron updates order statuses every few minutes—hands‑free.</p>
             </div>
             <div class="relative rounded-2xl bg-glass p-6 reveal">
-              <div class="h-12 w-12 rounded-xl bg-gradient-to-br from-secondary/80 to-primary/70 text:white grid place-items-center mb-4">
+              <div class="h-12 w-12 rounded-xl bg-gradient-to-br from-secondary/80 to-primary/70 text-white grid place-items-center mb-4">
                 <span class="material-symbols-outlined">api</span>
               </div>
               <h3 class="font-bold">Client API</h3>
-              <p class="mt-2 text-sm">Balance, services, add order, status via API key auth.</p>
+              <p class="mt-2 text-sm">Balance, services, add order, status via API key authentication.</p>
+            </div>
+          </div>
+
+          <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="relative rounded-2xl bg-glass p-6 reveal">
+              <div class="h-12 w-12 rounded-xl bg-gradient-to-br from-secondary/80 to-primary/70 text-white grid place-items-center mb-4">
+                <span class="material-symbols-outlined">schedule</span>
+              </div>
+              <h3 class="font-bold">Drip‑Feed</h3>
+              <p class="mt-2 text-sm">Optional drip‑feed orders for gradual delivery.</p>
+            </div>
+            <div class="relative rounded-2xl bg-glass p-6 reveal">
+              <div class="h-12 w-12 rounded-xl bg-gradient-to-br from-secondary/80 to-primary/70 text-white grid place-items-center mb-4">
+                <span class="material-symbols-outlined">repeat</span>
+              </div>
+              <h3 class="font-bold">Subscriptions</h3>
+              <p class="mt-2 text-sm">Recurring orders for ongoing engagement.</p>
+            </div>
+            <div class="relative rounded-2xl bg-glass p-6 reveal">
+              <div class="h-12 w-12 rounded-xl bg-gradient-to-br from-secondary/80 to-primary/70 text-white grid place-items-center mb-4">
+                <span class="material-symbols-outlined">award_star</span>
+              </div>
+              <h3 class="font-bold">Refill & Guarantee</h3>
+              <p class="mt-2 text-sm">Handle refills and guarantees with providers.</p>
+            </div>
+            <div class="relative rounded-2xl bg-glass p-6 reveal">
+              <div class="h-12 w-12 rounded-xl bg-gradient-to-br from-secondary/80 to-primary/70 text-white grid place-items-center mb-4">
+                <span class="material-symbols-outlined">support_agent</span>
+              </div>
+              <h3 class="font-bold">Support Tickets</h3>
+              <p class="mt-2 text-sm">Built‑in ticketing to assist your clients.</p>
             </div>
           </div>
         </div>
@@ -199,6 +226,47 @@
         </div>
       </section>
 
+      <!-- How it works -->
+      <section class="px-4 sm:px-8 py-16">
+        <div class="mx-auto max-w-7xl">
+          <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight reveal text-center">How it works</h2>
+          <div class="mt-10 grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="rounded-2xl bg-glass p-6 reveal text-center">
+              <div class="h-12 w-12 rounded-xl bg-gradient-to-br from-secondary/80 to-primary/70 text-white grid place-items-center mb-3">
+                <span class="material-symbols-outlined">account_circle</span>
+              </div>
+              <div class="font-bold">1. Create Account</div>
+              <div class="text-sm mt-1">Sign up and get your API key.</div>
+            </div>
+            <div class="rounded-2xl bg-glass p-6 reveal text-center">
+              <div class="h-12 w-12 rounded-xl bg-gradient-to-br from-secondary/80 to-primary/70 text-white grid place-items-center mb-3">
+                <span class="material-symbols-outlined">payments</span>
+              </div>
+              <div class="font-bold">2. Add Funds</div>
+              <div class="text-sm mt-1">Deposit via PayPal IPN (Stripe/Coinbase optional).</div>
+            </div>
+            <div class="rounded-2xl bg-glass p-6 reveal text-center">
+              <div class="h-12 w-12 rounded-xl bg-gradient-to-br from-secondary/80 to-primary/70 text-white grid place-items-center mb-3">
+                <span class="material-symbols-outlined">list_alt</span>
+              </div>
+              <div class="font-bold">3. Place Orders</div>
+              <div class="text-sm mt-1">Choose services and submit links/quantities.</div>
+            </div>
+            <div class="rounded-2xl bg-glass p-6 reveal text-center">
+              <div class="h-12 w-12 rounded-xl bg-gradient-to-br from-secondary/80 to-primary/70 text-white grid place-items-center mb-3">
+                <span class="material-symbols-outlined">insights</span>
+              </div>
+              <div class="font-bold">4. Track Status</div>
+              <div class="text-sm mt-1">Real‑time updates via cron and API.</div>
+            </div>
+          </div>
+          <div class="mt-10 flex flex-wrap gap-4 justify-center">
+            <a href="/login/signup" class="relative rounded-full bg-gradient-to-r from-primary to-primary-light px-8 py-3 text-base font-bold text-white shadow-xl shadow-primary/30 hover:shadow-primary/50 transition transform hover:scale-[1.04] active:scale-95">Get Started</a>
+            <a href="index.php?route=api_docs" class="relative rounded-full border border-white/30 bg-white/10 dark:bg-black/20 px-8 py-3 text-base font-bold text-gray-900 dark:text-gray-100 hover:border-secondary/60 shimmer-outline">API Docs</a>
+          </div>
+        </div>
+      </section>
+
       <!-- CTA -->
       <section class="px-4 sm:px-8 pb-24">
         <div class="mx-auto max-w-7xl">
@@ -209,7 +277,7 @@
             <p class="mt-2 text-gray-600 dark:text-gray-300">Sign up in minutes. Add providers, sync services, start ordering.</p>
             <div class="mt-6 flex flex-wrap gap-4">
               <a href="/login/signup" class="relative rounded-full bg-gradient-to-r from-primary to-primary-light px-8 py-3 text-base font-bold text-white shadow-xl shadow-primary/30 hover:shadow-primary/50 transition transform hover:scale-[1.04] active:scale-95">Create Account</a>
-              <a href="index.php?route=api_docs" class="relative rounded-full border border-white/30 bg-white/10 dark:bg-black/20 px-8 py-3 text-base font-bold text-gray-900 dark:text-gray-100 hover:border-secondary/60 shimmer-outline">API Docs</a>
+              <a href="index.php?route=services" class="relative rounded-full border border-white/30 bg-white/10 dark:bg-black/20 px-8 py-3 text-base font-bold text-gray-900 dark:text-gray-100 hover:border-secondary/60 shimmer-outline">Browse Services</a>
             </div>
           </div>
         </div>
@@ -229,13 +297,11 @@
   </div>
 
   <script>
-    // Intersection reveal + counters
     (function(){
       const observer = new IntersectionObserver(entries => {
         entries.forEach(e => {
           if (e.isIntersecting) {
             e.target.classList.add('show');
-            // animate counters
             const counters = e.target.querySelectorAll('[data-count]');
             counters.forEach(el => {
               const target = parseInt(el.getAttribute('data-count'), 10) || 0;
