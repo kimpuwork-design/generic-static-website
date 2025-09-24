@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Instagram Views — OG Provider Clone</title>
+  <link rel="stylesheet" href="../assets/style.css">
+  <style>
+    .breadcrumb { margin-bottom: 0.8rem; font-size: 0.95rem; }
+    .service-hero { display:flex; align-items:center; gap:0.8rem; margin-bottom: 0.6rem; }
+    .service-body { display:grid; grid-template-columns: 1.2fr 0.8fr; gap:1rem; }
+    .panel { background:#fff; border:1px solid #e5e7eb; border-radius:14px; padding:1rem; }
+    .panel h3 { margin-bottom: 0.5rem; }
+    .field { display:grid; gap:0.35rem; margin-bottom: 0.7rem; }
+    .input { padding: 0.6rem 0.7rem; border-radius: 10px; border: 1px solid #e5e7eb; font-size: 1rem; }
+    @media (max-width: 780px) { .service-body { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <div class="brand">
+        <a href="/"><img class="brand-logo" src="https://cs1.socpanel.com/cs1/project_images/4UC30wyEkkNdcwv1u8zErLIlTXrOZr8tuXvfCUly.webp" alt="Instagram" /></a>
+      </div>
+      <nav class="nav">
+        <a class="btn btn--ghost" href="/">Home</a>
+        <a class="btn btn--primary" href="/order">Fast order</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="breadcrumb"><a href="/order">Order</a> · Instagram Views</div>
+    <div class="service-hero">
+      <img src="https://ogprovider.com/ssr-landing-static/eight/images/instagram.svg" width="32" height="32" alt="">
+      <h1>Instagram Views</h1>
+    </div>
+
+    <div class="service-body">
+      <section class="panel">
+        <h3>Description</h3>
+        <p>Fast and safe Instagram views for posts and reels.</p>
+        <ul>
+          <li>Delivery: Fast</li>
+          <li>Quality: High retention options available</li>
+          <li>Starting price: RM 0.020</li>
+        </ul>
+      </section>
+      <aside class="panel">
+        <h3>Place order</h3>
+        <form>
+          <div class="field">
+            <label for="post">Post/Reel link</label>
+            <input id="post" class="input" type="url" placeholder="https://www.instagram.com/p/..." required>
+          </div>
+          <div class="field">
+            <label for="quantity">Quantity</label>
+            <input id="quantity" class="input" type="number" min="100" step="100" value="1000">
+          </div>
+          <button class="btn btn--primary" type="submit" style="width:100%;">Submit</button>
+        </form>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    <p>Unofficial clone for demonstration purposes. All trademarks and images belong to their respective owners.</p>
+  </footer>
+  <script src="../assets/script.js"></script>
+</body>
+</html>
