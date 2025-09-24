@@ -116,13 +116,29 @@ function humanCategoryFromHash(hash) {
   return { key, label: CATEGORIES[key] || "All" };
 }
 
+const STATE = { search: "", sort: "az" };
+
 function renderServices(categoryKey) {
   const grid = document.getElementById("service-grid");
   const heading = document.getElementById("service-heading");
   if (!grid) return;
 
   const cat = categoryKey && CATEGORIES[categoryKey] ? categoryKey : "all";
-  const list = cat === "all" ? SERVICES : SERVICES.filter(s => s.category === cat);
+  let list = cat === "all" ? SERVICES.slice() : SERVICES.filter(s => s.category === cat);
+
+  // search
+  const q = (STATE.search || "").trim().toLowerCase();
+  if (q) {
+    list = list.filter(s => (s.title || "").toLowerCase().includes(q));
+  }
+
+  // sort
+  list.sort((a, b) => {
+    const ta = (a.title || "").toLowerCase();
+    const tb = (b.title || "").toLowerCase();
+    if (STATE.sort === "za") return tb.localeCompare(ta);
+    return ta.localeCompare(tb);
+  });
 
   if (heading) {
     heading.textContent = cat === "all" ? "All services" : CATEGORIES[cat];
@@ -155,6 +171,23 @@ function initFilters() {
       renderServices(href.slice(1));
     });
   });
+
+  const searchEl = document.getElementById("search");
+  const sortEl = document.getElementById("sort");
+  if (searchEl) {
+    searchEl.addEventListener("input", () => {
+      STATE.search = searchEl.value || "";
+      const { key } = humanCategoryFromHash(location.hash);
+      renderServices(key);
+    });
+  }
+  if (sortEl) {
+    sortEl.addEventListener("change", () => {
+      STATE.sort = sortEl.value || "az";
+      const { key } = humanCategoryFromHash(location.hash);
+      renderServices(key);
+    });
+  }
 
   window.addEventListener("hashchange", () => {
     const { key } = humanCategoryFromHash(location.hash);

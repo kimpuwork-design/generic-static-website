@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cart — OG Provider Clone</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    .cart { display:grid; gap:0.8rem; }
+    .cart-item { display:flex; align-items:center; justify-content:space-between; padding:0.8rem; border:1px solid #e5e7eb; border-radius:12px; }
+    .cart-item-main { display:grid; gap:0.2rem; }
+    .cart-item-meta { display:flex; gap:0.6rem; align-items:center; }
+    .summary { display:flex; align-items:center; justify-content:space-between; padding:0.8rem; background:#f8fafc; border:1px solid #e5e7eb; border-radius:12px; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <div class="brand">
+        <a href="/"><img class="brand-logo" src="https://cs1.socpanel.com/cs1/panel_logos/2LZexkl6PJSuDMiYkBEQHj1HLoQhCckfctYMEzVr.png" alt="OG Provider" /></a>
+      </div>
+      <nav class="nav">
+        <a class="btn btn--ghost" href="/">Home</a>
+        <a class="btn btn--primary" href="/order">Fast order</a>
+        <a class="btn btn--ghost" href="/reg">Start Now</a>
+        <a id="linkSignIn" class="btn btn--ghost" href="/login">Sign in</a>
+        <a id="linkAccount" class="btn btn--ghost" href="/order" style="display:none;">Account</a>
+        <a class="btn btn--ghost cart-link" href="/cart.html">Cart <span id="cartCount" class="badge">0</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <h1>Cart</h1>
+    <div id="cartEmpty" class="muted">Your cart is empty.</div>
+    <div id="cartList" class="cart"></div>
+    <div class="summary">
+      <strong>Total</strong>
+      <div>
+        <span id="cartTotal">RM 0.00</span>
+        <button id="clearCartBtn" class="btn" style="margin-left:0.6rem;">Clear</button>
+        <button id="checkoutBtn" class="btn btn--primary" style="margin-left:0.4rem;">Proceed</button>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>Unofficial clone for demonstration purposes. All trademarks and images belong to their respective owners.</p>
+  </footer>
+
+  <script src="assets/services.js"></script>
+  <script src="assets/app.js"></script>
+  <script>
+    document.getElementById("checkoutBtn").addEventListener("click", () => {
+      const user = App.getUser();
+      if(!user){
+        alert("Please sign in to proceed.");
+        location.href = "/login";
+        return;
+      }
+      alert("Static demo: checkout is not implemented.");
+    });
+  </script>
+</body>
+</html>

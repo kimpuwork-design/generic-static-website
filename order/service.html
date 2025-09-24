@@ -26,6 +26,10 @@
       <nav class="nav">
         <a class="btn btn--ghost" href="/">Home</a>
         <a class="btn btn--primary" href="/order">Fast order</a>
+        <a class="btn btn--ghost" href="/reg">Start Now</a>
+        <a id="linkSignIn" class="btn btn--ghost" href="/login">Sign in</a>
+        <a id="linkAccount" class="btn btn--ghost" href="/order" style="display:none;">Account</a>
+        <a class="btn btn--ghost cart-link" href="/cart.html">Cart <span id="cartCount" class="badge">0</span></a>
       </nav>
     </div>
   </header>
@@ -114,12 +118,10 @@
         qty.min = 100; qty.step = 100; qty.value = 1000;
       }
 
-      document.getElementById("orderForm").addEventListener("submit", (e) => {
-        e.preventDefault();
-        alert("This is a static demo. No order submitted.");
-      });
+      // submission is handled by assets/app.js to add items to cart
     }
     document.addEventListener("DOMContentLoaded", initService);
   </script>
+  <script src="../assets/app.js"></script>
 </body>
 </html>

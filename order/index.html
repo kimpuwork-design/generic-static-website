@@ -39,6 +39,10 @@
       <nav class="nav">
         <a class="btn btn--ghost" href="/">Home</a>
         <a class="btn btn--primary" href="/order">Fast order</a>
+        <a class="btn btn--ghost" href="/reg">Start Now</a>
+        <a id="linkSignIn" class="btn btn--ghost" href="/login">Sign in</a>
+        <a id="linkAccount" class="btn btn--ghost" href="/order" style="display:none;">Account</a>
+        <a class="btn btn--ghost cart-link" href="/cart.html">Cart <span id="cartCount" class="badge">0</span></a>
       </nav>
     </div>
   </header>
@@ -67,6 +71,13 @@
       </aside>
 
       <section>
+        <div class="toolbar">
+          <input id="search" class="input-text" type="search" placeholder="Search services...">
+          <select id="sort" class="select">
+            <option value="az">Sort: A–Z</option>
+            <option value="za">Sort: Z–A</option>
+          </select>
+        </div>
         <h2 id="service-heading">All services</h2>
         <div id="service-grid" class="grid"></div>
       </section>
@@ -91,5 +102,6 @@
     }, 1000);
   </script>
   <script src="../assets/services.js"></script>
+  <script src="../assets/app.js"></script>
 </body>
 </html>
