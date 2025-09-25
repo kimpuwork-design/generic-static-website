@@ -30,4 +30,9 @@ return [
             // 'ipn_verify_url' => 'https://ipnpb.sandbox.paypal.com/cgi-bin/webscr',
         ],
     ],
+    // Optional email settings for forgot-password delivery
+    'mail' => [
+        'enabled' => false,
+        'from' => 'no-reply@yourdomain.com',
+    ],
 ];
