@@ -17,4 +17,9 @@
     </div>
     <button class="btn" type="submit">Create Account</button>
   </form>
+  <p class="muted" style="margin-top:.75rem;">
+    <a href="index.php?route=login">Already have an account? Login</a>
+    &nbsp;•&nbsp;
+    <a href="index.php?route=forgot">Forgot password?</a>
+  </p>
 </div>
