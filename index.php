@@ -158,9 +158,76 @@ switch ($r) {
         break;
 
     case 'forgot':
-        // Forgot password (UI only for now)
+        // Forgot password page (UI)
         $use_auth_layout = true;
         include __DIR__ . '/views/forgot.php';
+        break;
+
+    case 'forgot_request':
+        // Create reset token & code, email (if enabled) or return for testing
+        header('Content-Type: application/json');
+        if (!is_post()) { echo json_encode(['error' => 'method']); break; }
+        $email = trim($_POST['email'] ?? '');
+        if (!$email) { echo json_encode(['error' => 'missing email']); break; }
+        $user = $db->fetch("SELECT id,email FROM users WHERE email=?", [$email]);
+        if (!$user) { echo json_encode(['error' => 'not found']); break; }
+        $token = bin2hex(random_bytes(32)); // 64-char token
+        $code = str_pad((string)random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        $expires = date('Y-m-d H:i:s', time() + 15 * 60);
+        $db->query("INSERT INTO password_resets (user_id, token, code, expires_at, created_at) VALUES (?, ?, ?, ?, NOW())", [
+            $user['id'], $token, $code, $expires
+        ]);
+        $resetLink = site_url('index.php?route=forgot&token=' . $token);
+        $mailCfg = $config['mail'] ?? [];
+        if (($mailCfg['enabled'] ?? false) === true) {
+            $subject = ($config['app']['name'] ?? 'SMM Panel') . " Password Reset";
+            $body = "Hello,\n\nUse this code: {$code}\nReset link: {$resetLink}\nIt expires in 15 minutes.\n\n";
+            @mail($user['email'], $subject, $body, "From: " . ($mailCfg['from'] ?? "no-reply@localhost"));
+            echo json_encode(['ok' => true]);
+        } else {
+            echo json_encode(['ok' => true, 'token' => $token, 'code' => $code, 'debug' => true]);
+        }
+        break;
+
+    case 'forgot_verify':
+        // Verify code validity
+        header('Content-Type: application/json');
+        if (!is_post()) { echo json_encode(['error' => 'method']); break; }
+        $email = trim($_POST['email'] ?? '');
+        $code = trim($_POST['code'] ?? '');
+        if (!$email || !$code) { echo json_encode(['error' => 'missing params']); break; }
+        $user = $db->fetch("SELECT id FROM users WHERE email=?", [$email]);
+        if (!$user) { echo json_encode(['error' => 'not found']); break; }
+        $row = $db->fetch("SELECT token, expires_at, used_at FROM password_resets WHERE user_id=? AND code=? ORDER BY id DESC LIMIT 1", [$user['id'], $code]);
+        if (!$row) { echo json_encode(['error' => 'invalid code']); break; }
+        if (!empty($row['used_at'])) { echo json_encode(['error' => 'used']); break; }
+        if (strtotime($row['expires_at']) < time()) { echo json_encode(['error' => 'expired']); break; }
+        echo json_encode(['ok' => true, 'token' => $row['token']]);
+        break;
+
+    case 'forgot_reset':
+        // Reset password using token + code
+        header('Content-Type: application/json');
+        if (!is_post()) { echo json_encode(['error' => 'method']); break; }
+        $token = trim($_POST['token'] ?? '');
+        $code = trim($_POST['code'] ?? '');
+        $password = $_POST['password'] ?? '';
+        if (!$token || !$code || !$password) { echo json_encode(['error' => 'missing params']); break; }
+        $row = $db->fetch("SELECT pr.*, u.email FROM password_resets pr JOIN users u ON u.id = pr.user_id WHERE pr.token=? AND pr.code=? ORDER BY pr.id DESC LIMIT 1", [$token, $code]);
+        if (!$row) { echo json_encode(['error' => 'invalid token']); break; }
+        if (!empty($row['used_at'])) { echo json_encode(['error' => 'used']); break; }
+        if (strtotime($row['expires_at']) < time()) { echo json_encode(['error' => 'expired']); break; }
+        $hash = password_hash($password, PASSWORD_DEFAULT);
+        $db->begin();
+        try {
+            $db->query("UPDATE users SET password_hash=? WHERE id=?", [$hash, $row['user_id']]);
+            $db->query("UPDATE password_resets SET used_at=NOW() WHERE id=?", [$row['id']]);
+            $db->commit();
+            echo json_encode(['ok' => true]);
+        } catch (Throwable $e) {
+            $db->rollback();
+            echo json_encode(['error' => 'db']);
+        }
         break;
 
     case 'admin_providers':
