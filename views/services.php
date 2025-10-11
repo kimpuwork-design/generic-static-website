@@ -1,7 +1,33 @@
-<div class="card">
+<div class="card reveal">
   <h2>Services</h2>
-  <p class="muted">Choose a service and place an order.</p>
-  <table>
+  <p class="muted">Search, filter by category, and place your order.</p>
+
+  <!-- Filters -->
+  <form method="get" action="index.php" style="margin: .6rem 0;">
+    <input type="hidden" name="route" value="services">
+    <div class="grid">
+      <div>
+        <label>Search</label>
+        <input type="text" name="q" value="<?=h($_GET['q'] ?? '')?>" placeholder="Search by name or category">
+      </div>
+      <div>
+        <label>Category</label>
+        <select name="cat">
+          <option value="">All</option>
+          <?php foreach ($categories as $c): ?>
+            <?php $catv = $c['category']; ?>
+            <option value="<?=h($catv)?>" <?=(!empty($_GET['cat']) && $_GET['cat'] === $catv) ? 'selected' : ''?>><?=h($catv)?></option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+    </div>
+    <div style="margin-top:.6rem;">
+      <button class="btn" type="submit">Apply Filters</button>
+      <a class="btn btn-outline" href="index.php?route=services">Clear</a>
+    </div>
+  </form>
+
+  <table class="table-glass">
     <thead><tr><th>Service</th><th>Category</th><th>Provider</th><th>Rate/1k</th><th>Min</th><th>Max</th><th></th></tr></thead>
     <tbody>
       <?php foreach ($services as $s): ?>
@@ -16,7 +42,7 @@
         </tr>
       <?php endforeach; ?>
       <?php if (!$services): ?>
-        <tr><td colspan="7" class="muted">No services yet. Admins can sync services from providers.</td></tr>
+        <tr><td colspan="7" class="muted">No services match your filters. Try adjusting search or category.</td></tr>
       <?php endif; ?>
     </tbody>
   </table>

@@ -97,7 +97,27 @@ switch ($r) {
     case 'services':
         $auth->requireLogin();
         $providers = $api->listProviders();
-        $services = $db->fetchAll("SELECT s.*, p.name AS provider_name FROM services s JOIN providers p ON p.id=s.provider_id WHERE s.active=1 ORDER BY category, name ASC LIMIT 500");
+
+        $q = trim($_GET['q'] ?? '');
+        $cat = trim($_GET['cat'] ?? '');
+        $params = [];
+        $sql = "SELECT s.*, p.name AS provider_name FROM services s JOIN providers p ON p.id=s.provider_id WHERE s.active=1";
+
+        if ($q !== '') {
+            $params[] = "%{$q}%";
+            $params[] = "%{$q}%";
+            $sql .= " AND (s.name LIKE ? OR s.category LIKE ?)";
+        }
+        if ($cat !== '') {
+            $params[] = $cat;
+            $sql .= " AND s.category = ?";
+        }
+
+        $sql .= " ORDER BY s.category, s.name ASC LIMIT 500";
+        $services = $db->fetchAll($sql, $params);
+
+        $categories = $db->fetchAll("SELECT DISTINCT category FROM services WHERE active=1 ORDER BY category ASC");
+
         include __DIR__ . '/views/services.php';
         break;
 

@@ -1,4 +1,4 @@
-<div class="card">
+<div class="card reveal">
   <h2>API Documentation</h2>
   <p>Base endpoint: <code>index.php?route=api</code></p>
   <p>Authenticate using your API key: include <code>key</code> in POST body.</p>
