@@ -38,7 +38,18 @@
           <td><?=h(number_format((float)$s['rate'], 4))?></td>
           <td><?=h($s['min'])?></td>
           <td><?=h($s['max'])?></td>
-          <td><a class="btn btn-outline" href="index.php?route=order_new&amp;service_id=<?=h($s['id'])?>">Order</a></td>
+          <td>
+            <a class="btn btn-outline" href="index.php?route=order_new&amp;service_id=<?=h($s['id'])?>">Order</a>
+            <button class="btn" type="button"
+                    data-qo="1"
+                    data-id="<?=h($s['id'])?>"
+                    data-name="<?=h($s['name'])?>"
+                    data-provider="<?=h($s['provider_name'])?>"
+                    data-rate="<?=h(number_format((float)$s['rate'], 4))?>"
+                    data-min="<?=h($s['min'])?>"
+                    data-max="<?=h($s['max'])?>"
+            >Quick</button>
+          </td>
         </tr>
       <?php endforeach; ?>
       <?php if (!$services): ?>
@@ -46,4 +57,28 @@
       <?php endif; ?>
     </tbody>
   </table>
+</div>
+
+<!-- Quick Order Drawer -->
+<div class="overlay-backdrop" id="qo-backdrop"></div>
+<div class="drawer" id="qo-drawer" role="dialog" aria-modal="true" aria-labelledby="qo-title">
+  <header>
+    <h3 id="qo-title" class="page-title" style="font-size:1.2rem;margin:0;">Quick Order</h3>
+    <button class="btn btn-outline" type="button" id="qo-close">Close</button>
+  </header>
+  <div style="padding:1rem;">
+    <p class="muted" id="qo-note" style="margin-bottom:.6rem;"></p>
+    <form id="qo-form" method="post" action="">
+      <input type="hidden" name="csrf" value="<?=h($csrf)?>">
+      <div>
+        <label>Link</label>
+        <input type="url" name="link" id="qo-link" placeholder="https://..." required>
+      </div>
+      <div style="margin-top:.6rem;">
+        <label>Quantity</label>
+        <input type="number" name="quantity" id="qo-qty" required>
+      </div>
+      <button class="btn" type="submit" style="margin-top:.8rem;">Place Order</button>
+    </form>
+  </div>
 </div>

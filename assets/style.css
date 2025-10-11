@@ -428,3 +428,85 @@ table tbody tr:hover {
   opacity: 1;
   transform: translateY(0);
 }
+
+/* Overlay + Drawer (Quick Order) */
+.overlay-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 12, 20, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 90;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition);
+}
+.overlay-backdrop.show { opacity: 1; pointer-events: all; }
+
+.drawer {
+  position: fixed;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: min(520px, 95vw);
+  z-index: 100;
+  background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.06));
+  border-left: 1px solid rgba(255,255,255,0.18);
+  box-shadow: -18px 0 48px rgba(0,0,0,0.45);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  transform: translateX(100%);
+  transition: transform var(--transition);
+}
+.drawer.open { transform: translateX(0); }
+.drawer header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1rem;
+  border-bottom: 1px solid rgba(255,255,255,0.10);
+}
+
+/* Theme swatches */
+.theme-block {
+  margin-top: 1rem;
+}
+.theme-swatches {
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+.swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.24);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+  cursor: pointer;
+}
+.swatch.active {
+  outline: 2px solid rgba(255,255,255,0.9);
+  outline-offset: 2px;
+}
+
+/* Toasts */
+#toast-container {
+  position: fixed;
+  z-index: 120;
+  right: 18px;
+  bottom: 18px;
+  display: grid;
+  gap: .6rem;
+}
+.toast {
+  min-width: 220px;
+  max-width: 360px;
+  padding: .7rem .9rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06));
+  color: var(--text);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.35);
+}
+.toast.success { border-color: rgba(46, 204, 113, 0.35); }
+.toast.error { border-color: rgba(255, 99, 71, 0.35); }

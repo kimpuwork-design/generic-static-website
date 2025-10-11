@@ -149,7 +149,20 @@ switch ($r) {
     case 'orders':
         $auth->requireLogin();
         $user = $auth->user();
-        $orders = $db->fetchAll("SELECT o.*, s.name AS service_name FROM orders o JOIN services s ON s.id=o.service_id WHERE o.user_id=? ORDER BY o.id DESC LIMIT 200", [$user['id']]);
+        $status = trim($_GET['status'] ?? '');
+        $q = trim($_GET['q'] ?? '');
+        $params = [$user['id']];
+        $sql = "SELECT o.*, s.name AS service_name FROM orders o JOIN services s ON s.id=o.service_id WHERE o.user_id=?";
+        if ($status !== '') {
+            $params[] = $status;
+            $sql .= " AND o.status = ?";
+        }
+        if ($q !== '') {
+            $params[] = "%{$q}%";
+            $sql .= " AND (s.name LIKE ?)";
+        }
+        $sql .= " ORDER BY o.id DESC LIMIT 200";
+        $orders = $db->fetchAll($sql, $params);
         include __DIR__ . '/views/orders.php';
         break;
 
@@ -342,6 +355,13 @@ switch ($r) {
 
     case 'api_docs':
         include __DIR__ . '/views/api_docs.php';
+        break;
+
+    case 'pricing':
+        $auth->requireLogin();
+        // Fetch all active services; view will group by category and show top items
+        $services = $db->fetchAll("SELECT s.*, p.name AS provider_name FROM services s JOIN providers p ON p.id=s.provider_id WHERE s.active=1 ORDER BY s.category ASC, s.rate ASC, s.name ASC LIMIT 1000");
+        include __DIR__ . '/views/pricing.php';
         break;
 
     case 'api':

@@ -10,6 +10,7 @@ $current = $_GET['route'] ?? 'dashboard';
   <title><?=h($appName)?></title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="assets/style.css">
+  <script>window.CSRF = "<?=h($csrf)?>";</script>
 </head>
 <body>
 <div class="app">
@@ -26,7 +27,10 @@ $current = $_GET['route'] ?? 'dashboard';
         <span class="icon"></span><span>Orders</span>
       </a>
       <a href="index.php?route=services" class="menu-item <?=($current==='services')?'active':''?>">
-        <span class="icon"></"></span><span>Services</span>
+        <span class="icon"></span><span>Services</span>
+      </a>
+      <a href="index.php?route=pricing" class="menu-item <?=($current==='pricing')?'active':''?>">
+        <span class="icon"></span><span>Pricing</span>
       </a>
       <a href="index.php?route=deposit" class="menu-item <?=($current==='deposit')?'active':''?>">
         <span class="icon"></span><span>Add Funds</span>
@@ -64,6 +68,16 @@ $current = $_GET['route'] ?? 'dashboard';
         </a>
       <?php endif; ?>
     </nav>
+  <div class="theme-block">
+      <div class="muted" style="margin-bottom:.3rem;">Theme</div>
+      <div class="theme-swatches">
+        <div class="swatch" data-c1="#8ad1ff" data-c2="#c79aff" style="background: linear-gradient(90deg,#8ad1ff,#c79aff);"></div>
+        <div class="swatch" data-c1="#7ef29c" data-c2="#39b385" style="background: linear-gradient(90deg,#7ef29c,#39b385);"></div>
+        <div class="swatch" data-c1="#ffd36e" data-c2="#ff8a3d" style="background: linear-gradient(90deg,#ffd36e,#ff8a3d);"></div>
+        <div class="swatch" data-c1="#ff89c7" data-c2="#7bd0ff" style="background: linear-gradient(90deg,#ff89c7,#7bd0ff);"></div>
+        <div class="swatch" data-c1="#a2b6ff" data-c2="#78e7ff" style="background: linear-gradient(90deg,#a2b6ff,#78e7ff);"></div>
+      </div>
+    </div>
   </aside>
   <main class="content">
     <?= $content ?>
@@ -75,6 +89,7 @@ $current = $_GET['route'] ?? 'dashboard';
         <a href="index.php?route=contact" style="color:#fff;">Contact</a>
       </p>
     </footer>
+    <div id="toast-container"></div>
   </main>
 </div>
 <script src="assets/script.js"></script>
