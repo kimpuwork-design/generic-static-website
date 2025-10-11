@@ -26,17 +26,23 @@ $current = $_GET['route'] ?? 'dashboard';
         <span class="icon"></span><span>Orders</span>
       </a>
       <a href="index.php?route=services" class="menu-item <?=($current==='services')?'active':''?>">
-        <span class="icon"></span><span>Services</span>
+        <span class="icon"></"></span><span>Services</span>
       </a>
       <a href="index.php?route=deposit" class="menu-item <?=($current==='deposit')?'active':''?>">
         <span class="icon"></span><span>Add Funds</span>
       </a>
-      <a href="index.php?route=api_docs" class="menu-item <?=($current==='api_docs')?'active':''?>">
+      <a href="index.php?route=contact" class="menu-item <?=($current==='contact')?'active':''?>">
         <span class="icon"></span><span>Support</span>
+      </a>
+      <a href="index.php?route=api_docs" class="menu-item <?=($current==='api_docs')?'active':''?>">
+        <span class="icon"></span><span>API Docs</span>
       </a>
       <?php if ($user && $user['role'] === 'admin'): ?>
         <a href="index.php?route=admin_providers" class="menu-item <?=($current==='admin_providers')?'active':''?>">
           <span class="icon"></span><span>Admin</span>
+        </a>
+        <a href="index.php?route=admin_tickets" class="menu-item <?=($current==='admin_tickets')?'active':''?>">
+          <span class="icon"></span><span>Tickets</span>
         </a>
       <?php endif; ?>
     </nav>
@@ -62,7 +68,12 @@ $current = $_GET['route'] ?? 'dashboard';
   <main class="content">
     <?= $content ?>
     <footer>
-      <p>&copy; <?=date('Y')?> <?=h($appName)?> · <a href="index.php?route=api_docs" style="color:#fff;">API</a></p>
+      <p>&copy; <?=date('Y')?> <?=h($appName)?> ·
+        <a href="index.php?route=terms" style="color:#fff;">Terms</a> ·
+        <a href="index.php?route=privacy" style="color:#fff;">Privacy</a> ·
+        <a href="index.php?route=api_docs" style="color:#fff;">API</a> ·
+        <a href="index.php?route=contact" style="color:#fff;">Contact</a>
+      </p>
     </footer>
   </main>
 </div>

@@ -256,6 +256,24 @@ switch ($r) {
         include __DIR__ . '/views/admin_providers.php';
         break;
 
+    case 'admin_tickets':
+        $auth->requireAdmin();
+        if (is_post()) {
+            if (!$auth->verifyCsrf($_POST['csrf'] ?? '')) {
+                $error = "Invalid CSRF token.";
+            } else {
+                $tid = (int)($_POST['ticket_id'] ?? 0);
+                $status = ($_POST['status'] ?? 'open') === 'closed' ? 'closed' : 'open';
+                if ($tid) {
+                    $db->query("UPDATE tickets SET status=?, updated_at=NOW() WHERE id=?", [$status, $tid]);
+                    $success = "Ticket updated.";
+                }
+            }
+        }
+        $tickets = $db->fetchAll("SELECT t.*, u.email AS user_email FROM tickets t LEFT JOIN users u ON u.id=t.user_id ORDER BY t.id DESC LIMIT 200");
+        include __DIR__ . '/views/admin_tickets.php';
+        break;
+
     case 'admin_sync':
         $auth->requireAdmin();
         $providerId = (int)($_GET['provider_id'] ?? 0);
@@ -269,6 +287,37 @@ switch ($r) {
         }
         $providers = $api->listProviders();
         include __DIR__ . '/views/admin_sync.php';
+        break;
+
+    case 'contact':
+        // Public contact form -> creates ticket (optional user)
+        if (is_post()) {
+            if (!$auth->verifyCsrf($_POST['csrf'] ?? '')) {
+                $error = "Invalid CSRF token.";
+            } else {
+                $email = trim($_POST['email'] ?? '');
+                $subject = trim($_POST['subject'] ?? '');
+                $message = trim($_POST['message'] ?? '');
+                $uid = null;
+                if ($auth->user()) { $uid = $auth->user()['id']; }
+                if (!$subject || !$message) {
+                    $error = "Subject and message are required.";
+                } else {
+                    $db->query("INSERT INTO tickets (user_id, email, subject, message, status, created_at, updated_at) VALUES (?, ?, ?, ?, 'open', NOW(), NOW())",
+                        [$uid, $email, $subject, $message]);
+                    $success = "Thanks! Your message has been received.";
+                }
+            }
+        }
+        include __DIR__ . '/views/contact.php';
+        break;
+
+    case 'terms':
+        include __DIR__ . '/views/terms.php';
+        break;
+
+    case 'privacy':
+        include __DIR__ . '/views/privacy.php';
         break;
 
     case 'api_docs':
