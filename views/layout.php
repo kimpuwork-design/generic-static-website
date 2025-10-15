@@ -20,32 +20,32 @@ $current = $_GET['route'] ?? 'dashboard';
       <div class="brand-name"><?=h($appName)?></div>
     </div>
     <nav class="menu">
-      <a href="index.php?route=dashboard" class="menu-item <?=($current==='dashboard')?'active':''?>">
+      <a id="menu-dashboard" href="index.php?route=dashboard" class="menu-item <?=($current==='dashboard')?'active':''?>">
         <span class="icon"></span><span>Dashboard</span>
       </a>
-      <a href="index.php?route=orders" class="menu-item <?=($current==='orders')?'active':''?>">
+      <a id="menu-orders" href="index.php?route=orders" class="menu-item <?=($current==='orders')?'active':''?>">
         <span class="icon"></span><span>Orders</span>
       </a>
-      <a href="index.php?route=services" class="menu-item <?=($current==='services')?'active':''?>">
+      <a id="menu-services" href="index.php?route=services" class="menu-item <?=($current==='services')?'active':''?>">
         <span class="icon"></span><span>Services</span>
       </a>
-      <a href="index.php?route=pricing" class="menu-item <?=($current==='pricing')?'active':''?>">
+      <a id="menu-pricing" href="index.php?route=pricing" class="menu-item <?=($current==='pricing')?'active':''?>">
         <span class="icon"></span><span>Pricing</span>
       </a>
-      <a href="index.php?route=deposit" class="menu-item <?=($current==='deposit')?'active':''?>">
+      <a id="menu-deposit" href="index.php?route=deposit" class="menu-item <?=($current==='deposit')?'active':''?>">
         <span class="icon"></span><span>Add Funds</span>
       </a>
-      <a href="index.php?route=contact" class="menu-item <?=($current==='contact')?'active':''?>">
+      <a id="menu-contact" href="index.php?route=contact" class="menu-item <?=($current==='contact')?'active':''?>">
         <span class="icon"></span><span>Support</span>
       </a>
-      <a href="index.php?route=api_docs" class="menu-item <?=($current==='api_docs')?'active':''?>">
+      <a id="menu-api" href="index.php?route=api_docs" class="menu-item <?=($current==='api_docs')?'active':''?>">
         <span class="icon"></span><span>API Docs</span>
       </a>
       <?php if ($user && $user['role'] === 'admin'): ?>
-        <a href="index.php?route=admin_providers" class="menu-item <?=($current==='admin_providers')?'active':''?>">
+        <a id="menu-admin" href="index.php?route=admin_providers" class="menu-item <?=($current==='admin_providers')?'active':''?>">
           <span class="icon"></span><span>Admin</span>
         </a>
-        <a href="index.php?route=admin_tickets" class="menu-item <?=($current==='admin_tickets')?'active':''?>">
+        <a id="menu-tickets" href="index.php?route=admin_tickets" class="menu-item <?=($current==='admin_tickets')?'active':''?>">
           <span class="icon"></span><span>Tickets</span>
         </a>
       <?php endif; ?>
@@ -92,6 +92,23 @@ $current = $_GET['route'] ?? 'dashboard';
     <div id="toast-container"></div>
   </main>
 </div>
+
+<!-- Onboarding tour elements -->
+<div class="tour-backdrop" id="tour-backdrop"></div>
+<div class="tour-highlight" id="tour-highlight"></div>
+<div class="tour-pop" id="tour-pop">
+  <h4 id="tour-title">Welcome</h4>
+  <div id="tour-text" class="muted">Let's take a quick tour of the panel.</div>
+  <div class="tour-actions">
+    <button class="btn btn-outline" id="tour-skip" type="button">Skip</button>
+    <button class="btn" id="tour-next" type="button">Next</button>
+  </div>
+</div>
+
+<script>
+  // Auth flag for onboarding tour
+  window.IS_AUTH = <?= $user ? 'true' : 'false' ?>;
+</script>
 <script src="assets/script.js"></script>
 </body>
 </html>

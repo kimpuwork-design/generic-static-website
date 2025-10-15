@@ -510,3 +510,37 @@ table tbody tr:hover {
 }
 .toast.success { border-color: rgba(46, 204, 113, 0.35); }
 .toast.error { border-color: rgba(255, 99, 71, 0.35); }
+
+/* Onboarding tour */
+.tour-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 12, 20, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 200;
+  display: none;
+}
+.tour-highlight {
+  position: fixed;
+  z-index: 210;
+  border-radius: 12px;
+  box-shadow: 0 0 0 9999px rgba(8,12,20,0.55), 0 0 0 2px rgba(255,255,255,0.8);
+  pointer-events: none;
+  display: none;
+}
+.tour-pop {
+  position: fixed;
+  z-index: 220;
+  display: none;
+  min-width: 280px;
+  max-width: 380px;
+  padding: .9rem 1rem;
+  border-radius: 12px;
+  color: var(--text);
+  background: linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.10));
+  border: 1px solid rgba(255,255,255,0.22);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+}
+.tour-pop h4 { margin: 0 0 .4rem 0; }
+.tour-actions { display:flex; gap:.4rem; margin-top:.6rem; }

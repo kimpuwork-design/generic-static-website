@@ -104,4 +104,79 @@
     });
   });
 
+  // Onboarding tour
+  function tourAvailable() {
+    return window.IS_AUTH === true && !localStorage.getItem('tourSeen');
+  }
+  const tourBackdrop = document.getElementById('tour-backdrop');
+  const tourHighlight = document.getElementById('tour-highlight');
+  const tourPop = document.getElementById('tour-pop');
+  const tourTitle = document.getElementById('tour-title');
+  const tourText = document.getElementById('tour-text');
+  const tourNext = document.getElementById('tour-next');
+  const tourSkip = document.getElementById('tour-skip');
+
+  const steps = [
+    { sel: '#menu-dashboard', title: 'Dashboard', text: 'Your overview: latest orders, counts and quick metrics.' },
+    { sel: '#menu-services', title: 'Services', text: 'Browse and filter the catalog. Try the Quick Order drawer.' },
+    { sel: '#menu-deposit', title: 'Add Funds', text: 'Deposit via PayPal IPN or manual approval.' },
+    { sel: '#menu-orders', title: 'Orders', text: 'Track statuses updated automatically by cron.' },
+    { sel: '#menu-contact', title: 'Support', text: 'Open tickets or read docs. Admins have a Tickets view.' },
+  ];
+  let idx = 0;
+
+  function position(el) {
+    const r = el.getBoundingClientRect();
+    // Highlight ring
+    tourHighlight.style.display = 'block';
+    tourHighlight.style.left = (r.left - 8) + 'px';
+    tourHighlight.style.top = (r.top - 8) + 'px';
+    tourHighlight.style.width = (r.width + 16) + 'px';
+    tourHighlight.style.height = (r.height + 16) + 'px';
+    // Pop position (right side)
+    const x = Math.min(r.right + 18, window.innerWidth - 400);
+    const y = Math.max(r.top - 10, 20);
+    tourPop.style.display = 'block';
+    tourPop.style.left = x + 'px';
+    tourPop.style.top = y + 'px';
+  }
+
+  function showStep(i) {
+    const st = steps[i];
+    const target = document.querySelector(st.sel);
+    if (!target) { // skip if missing
+      idx++;
+      if (idx >= steps.length) return finishTour();
+      return showStep(idx);
+    }
+    tourTitle.textContent = st.title;
+    tourText.textContent = st.text;
+    position(target);
+  }
+
+  function startTour() {
+    if (!tourBackdrop || !tourHighlight || !tourPop) return;
+    tourBackdrop.style.display = 'block';
+    showStep(idx);
+  }
+  function finishTour() {
+    tourBackdrop.style.display = 'none';
+    tourHighlight.style.display = 'none';
+    tourPop.style.display = 'none';
+    try { localStorage.setItem('tourSeen', '1'); } catch(e){}
+    toast('Tour completed', 'success');
+  }
+
+  tourNext && tourNext.addEventListener('click', () => {
+    idx++;
+    if (idx >= steps.length) return finishTour();
+    showStep(idx);
+  });
+  tourSkip && tourSkip.addEventListener('click', finishTour);
+
+  if (tourAvailable()) {
+    // Start after slight delay to allow layout render
+    setTimeout(startTour, 500);
+  }
+
 })();
