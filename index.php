@@ -269,21 +269,95 @@ switch ($r) {
             if (!$auth->verifyCsrf($_POST['csrf'] ?? '')) {
                 $error = "Invalid CSRF token.";
             } else {
-                $name = trim($_POST['name'] ?? '');
-                $base = trim($_POST['base_url'] ?? '');
-                $key = trim($_POST['api_key'] ?? '');
-                $markup = (float)($_POST['markup_percent'] ?? 0);
-                if ($name && $base && $key) {
-                    try {
-                        $api->addProvider($name, $base, $key, $markup);
-                        $success = "Provider added.";
-                    } catch (Throwable $e) {
-                        $error = $e->getMessage();
+                $action = $_POST['action'] ?? 'add';
+                try {
+                    switch ($action) {
+                        case 'add':
+                            $name = trim($_POST['name'] ?? '');
+                            $base = trim($_POST['base_url'] ?? '');
+                            $key = trim($_POST['api_key'] ?? '');
+                            $markup = (float)($_POST['markup_percent'] ?? 0);
+                            if ($name && $base && $key) {
+                                $api->addProvider($name, $base, $key, $markup);
+                                $success = "Provider added.";
+                            } else {
+                                $error = "All fields are required.";
+                            }
+                            break;
+                        case 'update':
+                            $id = (int)($_POST['provider_id'] ?? 0);
+                            $name = trim($_POST['name'] ?? '');
+                            $base = trim($_POST['base_url'] ?? '');
+                            $key = trim($_POST['api_key'] ?? '');
+                            $markup = (float)($_POST['markup_percent'] ?? 0);
+                            $active = (($_POST['active'] ?? '1') === '1');
+                            if ($id && $name && $base && $key) {
+                                $api->updateProvider($id, $name, $base, $key, $markup, $active);
+                                $success = "Provider updated.";
+                            } else {
+                                $error = "All fields are required.";
+                            }
+                            break;
+                        case 'toggle':
+                            $id = (int)($_POST['provider_id'] ?? 0);
+                            $setActive = (($_POST['set_active'] ?? '1') === '1');
+                            if ($id) {
+                                $api->toggleProvider($id, $setActive);
+                                $success = $setActive ? "Activated." : "Deactivated.";
+                            }
+                            break;
+                        case 'delete':
+                            $id = (int)($_POST['provider_id'] ?? 0);
+                            if ($id) {
+                                $api->deleteProvider($id);
+                                $success = "Provider deleted.";
+                            }
+                            break;
+                        case 'import_csv':
+                            if (isset($_FILES['csv']) && is_uploaded_file($_FILES['csv']['tmp_name'])) {
+                                $h = fopen($_FILES['csv']['tmp_name'], 'r');
+                                $added = 0;
+                                while (($row = fgetcsv($h)) !== false) {
+                                    if (count($row) < 3) continue;
+                                    $name = trim($row[0] ?? '');
+                                    $base = trim($row[1] ?? '');
+                                    $key = trim($row[2] ?? '');
+                                    $markup = isset($row[3]) ? (float)$row[3] : 0.0;
+                                    $active = isset($row[4]) ? ((int)$row[4] ? true : false) : true;
+                                    if ($name && $base && $key) {
+                                        $api->addProvider($name, $base, $key, $markup);
+                                        if (!$active) {
+                                            $p = $db->fetch("SELECT id FROM providers WHERE name=? AND base_url=? ORDER BY id DESC LIMIT 1", [$name, $base]);
+                                            if ($p) { $api->toggleProvider((int)$p['id'], false); }
+                                        }
+                                        $added++;
+                                    }
+                                }
+                                fclose($h);
+                                $success = "Imported {$added} providers.";
+                            } else {
+                                $error = "Upload a CSV file.";
+                            }
+                            break;
+                        case 'ping':
+                            $id = (int)($_POST['provider_id'] ?? 0);
+                            if ($id) {
+                                $res = $api->pingProvider($id);
+                                $success = "Provider responded. Services: " . ($res['services'] ?? 0);
+                            }
+                            break;
+                        default:
+                            $error = "Unknown action.";
                     }
-                } else {
-                    $error = "All fields are required.";
+                } catch (Throwable $e) {
+                    $error = $e->getMessage();
                 }
             }
+        }
+        $editId = (int)($_GET['edit'] ?? 0);
+        $editProvider = null;
+        if ($editId) {
+            $editProvider = $api->getProvider($editId);
         }
         $providers = $api->listProviders();
         include __DIR__ . '/views/admin_providers.php';

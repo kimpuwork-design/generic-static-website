@@ -26,6 +26,30 @@ class ProviderAPI {
         $this->db->query("UPDATE providers SET active = ? WHERE id = ?", [$active ? 1 : 0, $id]);
     }
 
+    public function updateProvider(int $id, string $name, string $baseUrl, string $apiKey, float $markupPercent, bool $active): void {
+        $this->db->query(
+            "UPDATE providers SET name=?, base_url=?, api_key=?, markup_percent=?, active=? WHERE id=?",
+            [$name, $baseUrl, $apiKey, $markupPercent, $active ? 1 : 0, $id]
+        );
+    }
+
+    public function deleteProvider(int $id): void {
+        // Cascades will remove services via FK
+        $this->db->query("DELETE FROM providers WHERE id=?", [$id]);
+    }
+
+    public function pingProvider(int $id): array {
+        $provider = $this->getProvider($id);
+        if (!$provider) throw new RuntimeException("Provider not found");
+        $data = $this->providerRequest($provider, ['action' => 'services']);
+        $services = [];
+        if (isset($data['data'])) $services = $data['data'];
+        elseif (isset($data['services'])) $services = $data['services'];
+        elseif (is_array($data)) $services = $data;
+        $count = is_array($services) ? count($services) : 0;
+        return ['ok' => true, 'services' => $count];
+    }
+
     // SMM API v2 helpers
     public function providerRequest(array $provider, array $payload): array {
         $payload['key'] = $provider['api_key'];
