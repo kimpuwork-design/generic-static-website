@@ -8,7 +8,7 @@
     <div class="alert alert-error"><?=h($error)?></div>
   <?php endif; ?>
 
-  <table>
+  <table class="table-glass">
     <thead>
       <tr>
         <th>ID</th>

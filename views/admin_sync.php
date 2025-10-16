@@ -1,4 +1,4 @@
-<div class="card">
+<div class="card reveal">
   <h2>Sync Services</h2>
   <?php if (!empty($success)): ?>
     <div class="alert alert-success"><?=h($success)?></div>
@@ -7,8 +7,8 @@
     <div class="alert alert-error"><?=h($error)?></div>
   <?php endif; ?>
 
-  <p>Select a provider to sync the latest services.</p>
-  <table>
+  <p class="muted">Select a provider to sync the latest services.</p>
+  <table class="table-glass">
     <thead><tr><th>ID</th><th>Name</th><th>Actions</th></tr></thead>
     <tbody>
       <?php foreach ($providers as $p): ?>

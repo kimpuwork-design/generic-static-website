@@ -1,4 +1,4 @@
-<div class="card">
+<div class="card reveal">
   <h2>Place Order</h2>
   <?php if (!$service): ?>
     <p class="muted">Select a service from the <a href="index.php?route=services">Services</a> page.</p>
