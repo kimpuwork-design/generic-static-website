@@ -16,9 +16,9 @@ class ProviderAPI {
         return $this->db->fetch("SELECT * FROM providers WHERE id = ?", [$providerId]);
     }
 
-    public function addProvider(string $name, string $baseUrl, string $apiKey, float $markupPercent): void {
-        $this->db->query("INSERT INTO providers (name, base_url, api_key, markup_percent, active, created_at) VALUES (?, ?, ?, ?, 1, NOW())", [
-            $name, $baseUrl, $apiKey, $markupPercent
+    public function addProvider(string $name, string $baseUrl, string $apiKey, float $markupPercent, ?string $options = null): void {
+        $this->db->query("INSERT INTO providers (name, base_url, api_key, markup_percent, active, options, created_at) VALUES (?, ?, ?, ?, 1, ?, NOW())", [
+            $name, $baseUrl, $apiKey, $markupPercent, $options
         ]);
     }
 
@@ -26,42 +26,127 @@ class ProviderAPI {
         $this->db->query("UPDATE providers SET active = ? WHERE id = ?", [$active ? 1 : 0, $id]);
     }
 
-    public function updateProvider(int $id, string $name, string $baseUrl, string $apiKey, float $markupPercent, bool $active): void {
+    public function updateProvider(int $id, string $name, string $baseUrl, string $apiKey, float $markupPercent, bool $active, ?string $options = null): void {
         $this->db->query(
-            "UPDATE providers SET name=?, base_url=?, api_key=?, markup_percent=?, active=? WHERE id=?",
-            [$name, $baseUrl, $apiKey, $markupPercent, $active ? 1 : 0, $id]
+            "UPDATE providers SET name=?, base_url=?, api_key=?, markup_percent=?, active=?, options=? WHERE id=?",
+            [$name, $baseUrl, $apiKey, $markupPercent, $active ? 1 : 0, $options, $id]
         );
     }
 
     public function deleteProvider(int $id): void {
-        // Cascades will remove services via FK
         $this->db->query("DELETE FROM providers WHERE id=?", [$id]);
     }
 
-    public function pingProvider(int $id): array {
-        $provider = $this->getProvider($id);
-        if (!$provider) throw new RuntimeException("Provider not found");
-        $data = $this->providerRequest($provider, ['action' => 'services']);
-        $services = [];
-        if (isset($data['data'])) $services = $data['data'];
-        elseif (isset($data['services'])) $services = $data['services'];
-        elseif (is_array($data)) $services = $data;
-        $count = is_array($services) ? count($services) : 0;
-        return ['ok' => true, 'services' => $count];
+    private function opts(array $provider): array {
+        $raw = $provider['options'] ?? null;
+        if (!$raw) return [];
+        $o = json_decode($raw, true);
+        return is_array($o) ? $o : [];
     }
 
-    // SMM API v2 helpers
-    public function providerRequest(array $provider, array $payload): array {
-        $payload['key'] = $provider['api_key'];
+    private function paramKeys(array $opt): array {
+        $pk = $opt['param_keys'] ?? [];
+        return array_merge([
+            'service' => 'service',
+            'link' => 'link',
+            'quantity' => 'quantity',
+            'order' => 'order',
+            'key' => 'key',
+            'action' => 'action',
+        ], $pk);
+    }
+
+    private function actionName(array $opt, string $name): string {
+        $map = $opt['actions'] ?? [];
+        $def = ['services' => 'services', 'add' => 'add', 'status' => 'status'];
+        return $map[$name] ?? $def[$name] ?? $name;
+    }
+
+    private function endpoint(array $provider, array $opt, string $name): string {
+        $base = $provider['base_url'];
+        $end = $opt['endpoint'] ?? [];
+        return $end[$name] ?? $base;
+    }
+
+    private function method(array $opt, string $name): string {
+        $methods = $opt['methods'] ?? [];
+        $m = $methods[$name] ?? ($opt['method'] ?? 'POST');
+        return strtoupper($m);
+    }
+
+    private function servicesPath(array $opt): ?string {
+        $resp = $opt['response'] ?? [];
+        $path = $resp['services_path'] ?? null;
+        return is_string($path) && $path !== '' ? $path : null;
+    }
+
+    private function respKey(array $opt, string $key, string $default): string {
+        $r = $opt['response'] ?? [];
+        return is_string($r[$key] ?? '') ? ($r[$key] ?: $default) : $default;
+    }
+
+    private function getPath(array $arr, string $path) {
+        $parts = explode('.', $path);
+        $cur = $arr;
+        foreach ($parts as $p) {
+            if (is_array($cur) && array_key_exists($p, $cur)) {
+                $cur = $cur[$p];
+            } else {
+                return null;
+            }
+        }
+        return $cur;
+    }
+
+    // Flexible provider request
+    public function providerRequest(array $provider, array $payload, string $name): array {
+        $opt = $this->opts($provider);
+        $pk = $this->paramKeys($opt);
+        $act = $this->actionName($opt, $name);
+        $endpoint = $this->endpoint($provider, $opt, $name);
+        $method = $this->method($opt, $name);
+        $timeout = isset($opt['timeout']) ? (int)$opt['timeout'] : 30;
+        $sslVerify = array_key_exists('ssl_verify', $opt) ? (bool)$opt['ssl_verify'] : true;
+        $payloadStyle = ($opt['payload_style'] ?? 'form') === 'json' ? 'json' : 'form';
+        $headers = (array)($opt['headers'] ?? []);
+        $extra = (array)($opt['extra_params'] ?? []);
+
+        // Attach key/action using configured names
+        if ($pk['key'] !== '') {
+            $payload[$pk['key']] = $provider['api_key'];
+        }
+        if ($pk['action'] !== '' && $act !== '') {
+            $payload[$pk['action']] = $act;
+        }
+        foreach ($extra as $k => $v) {
+            if (!array_key_exists($k, $payload)) $payload[$k] = $v;
+        }
+
         $ch = curl_init();
-        curl_setopt_array($ch, [
-            CURLOPT_URL => $provider['base_url'],
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => $payload,
+        $opts = [
+            CURLOPT_URL => $endpoint,
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_SSL_VERIFYPEER => true,
-        ]);
+            CURLOPT_TIMEOUT => $timeout,
+            CURLOPT_SSL_VERIFYPEER => $sslVerify,
+        ];
+
+        if ($method === 'GET') {
+            $query = http_build_query($payload);
+            $opts[CURLOPT_URL] = strpos($endpoint, '?') === false ? ($endpoint . '?' . $query) : ($endpoint . '&' . $query);
+        } else {
+            $opts[CURLOPT_POST] = true;
+            if ($payloadStyle === 'json') {
+                $opts[CURLOPT_POSTFIELDS] = json_encode($payload);
+                $headers[] = 'Content-Type: application/json';
+            } else {
+                $opts[CURLOPT_POSTFIELDS] = $payload;
+            }
+        }
+        if (!empty($headers)) {
+            $opts[CURLOPT_HTTPHEADER] = $headers;
+        }
+
+        curl_setopt_array($ch, $opts);
         $resp = curl_exec($ch);
         if ($resp === false) {
             $err = curl_error($ch);
@@ -79,23 +164,44 @@ class ProviderAPI {
     public function syncServices(int $providerId): int {
         $provider = $this->getProvider($providerId);
         if (!$provider) throw new RuntimeException("Provider not found");
-        $data = $this->providerRequest($provider, ['action' => 'services']);
-        if (!isset($data['data']) && !isset($data[0])) {
-            // Some providers return plain array; normalize
-            $services = isset($data['services']) ? $data['services'] : $data;
-        } else {
-            $services = $data['data'] ?? $data;
+
+        $opt = $this->opts($provider);
+        $data = $this->providerRequest($provider, [], 'services');
+
+        // Locate services list
+        $services = null;
+        $path = $this->servicesPath($opt);
+        if ($path) {
+            $services = $this->getPath($data, $path);
         }
+        if ($services === null) {
+            if (isset($data['data'])) $services = $data['data'];
+            elseif (isset($data['services'])) $services = $data['services'];
+            else $services = $data;
+        }
+        if (!is_array($services)) {
+            throw new RuntimeException("Provider services not found");
+        }
+
+        // Mapping
+        $map = (array)($opt['service_map'] ?? []);
         $count = 0;
         foreach ($services as $svc) {
-            $externalId = (string)($svc['service'] ?? $svc['id'] ?? '');
+            if (!is_array($svc)) continue;
+            $externalId = (string)$this->firstValue($svc, $map['id'] ?? ['service','id']);
             if (!$externalId) continue;
-            $name = $svc['name'] ?? 'Service ' . $externalId;
-            $category = $svc['category'] ?? ($svc['type'] ?? 'General');
-            $rate = isset($svc['rate']) ? (float)$svc['rate'] : 0.0;
-            $min = isset($svc['min']) ? (int)$svc['min'] : 0;
-            $max = isset($svc['max']) ? (int)$svc['max'] : 0;
-            $type = $svc['type'] ?? 'default';
+
+            $name = (string)$this->firstValue($svc, $map['name'] ?? 'name');
+            if ($name === '') $name = 'Service ' . $externalId;
+
+            $category = (string)$this->firstValue($svc, $map['category'] ?? ['category','type']);
+            if ($category === '') $category = 'General';
+
+            $rate = (float)$this->firstValue($svc, $map['rate'] ?? 'rate');
+            $min = (int)$this->firstValue($svc, $map['min'] ?? 'min');
+            $max = (int)$this->firstValue($svc, $map['max'] ?? 'max');
+            $type = (string)$this->firstValue($svc, $map['type'] ?? 'type');
+            if ($type === '') $type = 'default';
 
             $exists = $this->db->fetch("SELECT id FROM services WHERE provider_id=? AND external_service_id=?", [$providerId, $externalId]);
             if ($exists) {
@@ -112,8 +218,18 @@ class ProviderAPI {
         return $count;
     }
 
+    private function firstValue(array $svc, $keySpec) {
+        if (is_array($keySpec)) {
+            foreach ($keySpec as $k) {
+                if (isset($svc[$k])) return $svc[$k];
+            }
+            return null;
+        }
+        return $svc[$keySpec] ?? null;
+    }
+
     public function placeOrder(int $userId, int $serviceId, string $link, int $quantity): int {
-        $service = $this->db->fetch("SELECT s.*, p.markup_percent FROM services s JOIN providers p ON p.id=s.provider_id WHERE s.id=?", [$serviceId]);
+        $service = $this->db->fetch("SELECT s.*, p.markup_percent, p.options FROM services s JOIN providers p ON p.id=s.provider_id WHERE s.id=?", [$serviceId]);
         if (!$service) throw new RuntimeException("Service not found");
 
         // Compute price
@@ -131,20 +247,24 @@ class ProviderAPI {
         $provider = $this->getProvider((int)$service['provider_id']);
         if (!$provider || !$provider['active']) throw new RuntimeException("Provider inactive");
 
-        // Place provider order
-        $resp = $this->providerRequest($provider, [
-            'action' => 'add',
-            'service' => $service['external_service_id'],
-            'link' => $link,
-            'quantity' => $quantity,
-        ]);
+        $opt = $this->opts($provider);
+        $pk = $this->paramKeys($opt);
 
-        if (!isset($resp['order'])) {
+        $payload = [
+            $pk['service'] => $service['external_service_id'],
+            $pk['link'] => $link,
+            $pk['quantity'] => $quantity,
+        ];
+
+        $resp = $this->providerRequest($provider, $payload, 'add');
+
+        $orderKey = $this->respKey($opt, 'order_id_key', 'order');
+        if (!isset($resp[$orderKey])) {
             $msg = isset($resp['error']) ? $resp['error'] : 'Unknown error';
             throw new RuntimeException("Provider order failed: " . $msg);
         }
 
-        $providerOrderId = (string)$resp['order'];
+        $providerOrderId = (string)$resp[$orderKey];
 
         // Deduct balance and create order
         $this->db->begin();
@@ -165,6 +285,67 @@ class ProviderAPI {
             throw $e;
         }
     }
+
+    public function updateOrderStatus(int $orderId): void {
+        $order = $this->db->fetch("SELECT o.*, s.external_service_id, s.provider_id FROM orders o JOIN services s ON s.id=o.service_id WHERE o.id=?", [$orderId]);
+        if (!$order) return;
+        $provider = $this->getProvider((int)$order['provider_id']);
+        if (!$provider) return;
+
+        $opt = $this->opts($provider);
+        $pk = $this->paramKeys($opt);
+
+        $resp = $this->providerRequest($provider, [
+            $pk['order'] => $order['provider_order_id'],
+        ], 'status');
+
+        $statusKey = $this->respKey($opt, 'status_key', 'status');
+        $chargeKey = $this->respKey($opt, 'charge_key', 'charge');
+        $remainsKey = $this->respKey($opt, 'remains_key', 'remains');
+
+        $status = $resp[$statusKey] ?? $order['status'];
+        $remains = $resp[$remainsKey] ?? null;
+        $charge = isset($resp[$chargeKey]) ? (float)$resp[$chargeKey] : null;
+
+        $this->db->query("UPDATE orders SET status=?, updated_at=NOW() WHERE id=?", [$status, $orderId]);
+
+        if ($status === 'partial' && $charge !== null) {
+            $ourCharge = (float)$order['charge'];
+            if ($charge < $ourCharge) {
+                $diff = round($ourCharge - $charge, 2);
+                $user = $this->db->fetch("SELECT id, balance FROM users WHERE id=?", [$order['user_id']]);
+                $newBalance = round($user['balance'] + $diff, 2);
+                $this->db->begin();
+                try {
+                    $this->db->query("UPDATE users SET balance=? WHERE id=?", [$newBalance, $order['user_id']]);
+                    $this->db->query("INSERT INTO transactions (user_id, type, amount, balance_after, meta, created_at) VALUES (?, 'refund', ?, ?, ?, NOW())", [
+                        $order['user_id'], $diff, $newBalance, json_encode(['order_id' => $orderId, 'remains' => $remains]),
+                    ]);
+                    $this->db->commit();
+                } catch (Throwable $e) {
+                    $this->db->rollback();
+                }
+            }
+        }
+    }
+
+    public function pingProvider(int $id): array {
+        $provider = $this->getProvider($id);
+        if (!$provider) throw new RuntimeException("Provider not found");
+        $data = $this->providerRequest($provider, [], 'services');
+        $opt = $this->opts($provider);
+        $services = null;
+        $path = $this->servicesPath($opt);
+        if ($path) $services = $this->getPath($data, $path);
+        if ($services === null) {
+            if (isset($data['data'])) $services = $data['data'];
+            elseif (isset($data['services'])) $services = $data['services'];
+            else $services = $data;
+        }
+        $count = is_array($services) ? count($services) : 0;
+        return ['ok' => true, 'services' => $count];
+    }
+}
 
     public function updateOrderStatus(int $orderId): void {
         $order = $this->db->fetch("SELECT o.*, s.external_service_id, s.provider_id FROM orders o JOIN services s ON s.id=o.service_id WHERE o.id=?", [$orderId]);

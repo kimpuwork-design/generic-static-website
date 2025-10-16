@@ -277,8 +277,10 @@ switch ($r) {
                             $base = trim($_POST['base_url'] ?? '');
                             $key = trim($_POST['api_key'] ?? '');
                             $markup = (float)($_POST['markup_percent'] ?? 0);
+                            $options = trim($_POST['options'] ?? '');
+                            if ($options === '') { $options = null; }
                             if ($name && $base && $key) {
-                                $api->addProvider($name, $base, $key, $markup);
+                                $api->addProvider($name, $base, $key, $markup, $options);
                                 $success = "Provider added.";
                             } else {
                                 $error = "All fields are required.";
@@ -291,8 +293,10 @@ switch ($r) {
                             $key = trim($_POST['api_key'] ?? '');
                             $markup = (float)($_POST['markup_percent'] ?? 0);
                             $active = (($_POST['active'] ?? '1') === '1');
+                            $options = trim($_POST['options'] ?? '');
+                            if ($options === '') { $options = null; }
                             if ($id && $name && $base && $key) {
-                                $api->updateProvider($id, $name, $base, $key, $markup, $active);
+                                $api->updateProvider($id, $name, $base, $key, $markup, $active, $options);
                                 $success = "Provider updated.";
                             } else {
                                 $error = "All fields are required.";
@@ -324,8 +328,10 @@ switch ($r) {
                                     $key = trim($row[2] ?? '');
                                     $markup = isset($row[3]) ? (float)$row[3] : 0.0;
                                     $active = isset($row[4]) ? ((int)$row[4] ? true : false) : true;
+                                    $options = isset($row[5]) ? trim($row[5]) : null;
+                                    if ($options === '') $options = null;
                                     if ($name && $base && $key) {
-                                        $api->addProvider($name, $base, $key, $markup);
+                                        $api->addProvider($name, $base, $key, $markup, $options);
                                         if (!$active) {
                                             $p = $db->fetch("SELECT id FROM providers WHERE name=? AND base_url=? ORDER BY id DESC LIMIT 1", [$name, $base]);
                                             if ($p) { $api->toggleProvider((int)$p['id'], false); }
