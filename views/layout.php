@@ -42,7 +42,7 @@ $current = $_GET['route'] ?? 'dashboard';
         <span class="icon"></span><span>API Docs</span>
       </a>
       <?php if ($user && $user['role'] === 'admin'): ?>
-        <a id="menu-admin" href="index.php?route=admin_providers" class="menu-item <?=($current==='admin_providers')?'active':''?>">
+        <a id="menu-admin" href="admin/" class="menu-item <?=($current==='admin_providers')?'active':''?>">
           <span class="icon"></span><span>Admin</span>
         </a>
         <a id="menu-tickets" href="index.php?route=admin_tickets" class="menu-item <?=($current==='admin_tickets')?'active':''?>">
