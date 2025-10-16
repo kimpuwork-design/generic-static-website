@@ -45,6 +45,9 @@ $current = $_GET['route'] ?? 'dashboard';
         <a id="menu-admin" href="admin/" class="menu-item <?=($current==='admin_providers')?'active':''?>">
           <span class="icon"></span><span>Admin</span>
         </a>
+        <a id="menu-oauth" href="admin/oauth/" class="menu-item <?=($current==='admin_oauth')?'active':''?>">
+          <span class="icon"></span><span>Auth Settings</span>
+        </a>
         <a id="menu-tickets" href="index.php?route=admin_tickets" class="menu-item <?=($current==='admin_tickets')?'active':''?>">
           <span class="icon"></span><span>Tickets</span>
         </a>

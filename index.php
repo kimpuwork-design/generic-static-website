@@ -14,10 +14,12 @@ date_default_timezone_set($config['app']['timezone'] ?? 'UTC');
 require_once __DIR__ . '/app/Database.php';
 require_once __DIR__ . '/app/Auth.php';
 require_once __DIR__ . '/app/ProviderAPI.php';
+require_once __DIR__ . '/app/OAuth.php';
 
 $db = new Database($config['db']);
 $auth = new Auth($db, $config);
 $api = new ProviderAPI($db, $config);
+$oauth = new OAuth($db, $config, $auth);
 
 function h($s) { return htmlspecialchars($s ?? '', ENT_QUOTES, 'UTF-8'); }
 function route(): string { return $_GET['route'] ?? 'dashboard'; }
@@ -56,6 +58,7 @@ switch ($r) {
                 }
             }
         }
+        $oauthProviders = $db->fetchAll("SELECT * FROM oauth_providers WHERE enabled=1 ORDER BY provider ASC");
         include __DIR__ . '/views/login.php';
         break;
 
@@ -75,6 +78,7 @@ switch ($r) {
                 }
             }
         }
+        $oauthProviders = $db->fetchAll("SELECT * FROM oauth_providers WHERE enabled=1 ORDER BY provider ASC");
         include __DIR__ . '/views/register.php';
         break;
 
@@ -400,6 +404,50 @@ switch ($r) {
         }
         $providers = $api->listProviders();
         include __DIR__ . '/views/admin_sync.php';
+        break;
+
+    case 'admin_oauth':
+        $auth->requireAdmin();
+        // Seed defaults if missing
+        $oauth->ensureSeed();
+        if (is_post()) {
+            if (!$auth->verifyCsrf($_POST['csrf'] ?? '')) {
+                $error = "Invalid CSRF token.";
+            } else {
+                $provider = trim($_POST['provider'] ?? '');
+                $enabled = (int)($_POST['enabled'] ?? 0);
+                $clientId = trim($_POST['client_id'] ?? '');
+                $clientSecret = trim($_POST['client_secret'] ?? '');
+                $redirectUri = trim($_POST['redirect_uri'] ?? '');
+                if ($provider && $clientId !== '' && $clientSecret !== '' && $redirectUri !== '') {
+                    try {
+                        $oauth->setProvider($provider, $enabled, $clientId, $clientSecret, $redirectUri);
+                        $success = "Saved settings for {$provider}.";
+                    } catch (Throwable $e) {
+                        $error = $e->getMessage();
+                    }
+                } else {
+                    // Allow toggling enabled off without credentials
+                    if ($provider && $enabled === 0) {
+                        $oauth->setProvider($provider, 0, null, null, null);
+                        $success = "Disabled {$provider}.";
+                    } else {
+                        $error = "Fill all fields or disable the provider.";
+                    }
+                }
+            }
+        }
+        $providers = $oauth->listProviders();
+        include __DIR__ . '/views/admin_oauth.php';
+        break;
+
+    case 'oauth_start':
+        $provider = trim($_GET['provider'] ?? '');
+        $oauth->start($provider);
+        break;
+
+    case 'oauth_callback':
+        $oauth->callback();
         break;
 
     case 'contact':

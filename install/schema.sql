@@ -99,5 +99,15 @@ CREATE TABLE IF NOT EXISTS tickets (
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- OAuth providers settings
+CREATE TABLE IF NOT EXISTS oauth_providers (
+  provider VARCHAR(50) PRIMARY KEY,
+  enabled TINYINT(1) NOT NULL DEFAULT 0,
+  client_id VARCHAR(255) DEFAULT NULL,
+  client_secret VARCHAR(255) DEFAULT NULL,
+  redirect_uri VARCHAR(255) DEFAULT NULL,
+  updated_at DATETIME NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE INDEX idx_orders_status ON orders(status);
 CREATE INDEX idx_services_provider ON services(provider_id);

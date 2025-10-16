@@ -22,4 +22,18 @@
     &nbsp;•&nbsp;
     <a href="/login/signup">Create account</a>
   </p>
+
+  <?php if (!empty($oauthProviders)): ?>
+    <div style="margin-top:1rem;">
+      <div class="muted" style="margin-bottom:.4rem;">Or continue with</div>
+      <div style="display:flex; gap:.4rem; flex-wrap:wrap;">
+        <?php foreach ($oauthProviders as $op): ?>
+          <?php $name = strtolower($op['provider']); ?>
+          <a class="btn btn-outline" href="index.php?route=oauth_start&amp;provider=<?=h($name)?>">
+            <?=h(ucfirst($name))?>
+          </a>
+        <?php endforeach; ?>
+      </div>
+    </div>
+  <?php endif; ?>
 </div>
