@@ -187,7 +187,7 @@ class OAuth {
             $_SESSION['role'] = $existing['role'];
         } else {
             $password = bin2hex(random_bytes(8)); // random
-            $this->auth->register($email, $password);
+            $this->auth->register($email, $password, null, null);
             $user = $this->db->fetch("SELECT * FROM users WHERE email=?", [$email]);
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['role'] = $user['role'];

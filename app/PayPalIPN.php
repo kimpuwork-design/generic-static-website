@@ -68,23 +68,66 @@ class PayPalIPN {
         $exists = $this->db->fetch("SELECT id FROM deposits WHERE txn_id=?", [$txnId]);
         if ($exists) return;
 
+        $promo = $this->config['promotions'] ?? [];
+        $firstBonusPct = (float)($promo['first_deposit_bonus_percent'] ?? 0);
+        $referralPct = (float)($promo['referral_bonus_percent'] ?? 0);
+
+        // Determine if this is the first completed deposit for the user
+        $prior = $this->db->fetch("SELECT COUNT(*) AS c FROM deposits WHERE user_id=? AND status='completed'", [$userId]);
+        $isFirst = ((int)($prior['c'] ?? 0) === 0);
+
         // Create deposit and credit balance
         $this->db->begin();
         try {
-            $this->db->query("INSERT INTO deposits (user_id, amount, method, status, txn_id, raw_payload, created_at, updated_at) VALUES (?, ?, 'paypal', 'completed', ?, ?, NOW(), NOW())", [
-                $userId, $gross, $txnId, json_encode($postData),
-            ]);
+            $this->db->query(
+                "INSERT INTO deposits (user_id, amount, method, status, txn_id, raw_payload, created_at, updated_at)
+                 VALUES (?, ?, 'paypal', 'completed', ?, ?, NOW(), NOW())",
+                [$userId, $gross, $txnId, json_encode($postData)]
+            );
 
-            $user = $this->db->fetch("SELECT id, balance FROM users WHERE id=?", [$userId]);
+            $user = $this->db->fetch("SELECT id, balance, referred_by FROM users WHERE id=?", [$userId]);
             if (!$user) {
                 $this->db->rollback();
                 return;
             }
-            $newBalance = round($user['balance'] + $gross, 2);
+
+            $bonus = 0.0;
+            if ($isFirst && $firstBonusPct > 0) {
+                $bonus = round($gross * $firstBonusPct / 100.0, 2);
+            }
+
+            $creditAmount = $gross + $bonus;
+            $newBalance = round($user['balance'] + $creditAmount, 2);
             $this->db->query("UPDATE users SET balance=? WHERE id=?", [$newBalance, $userId]);
-            $this->db->query("INSERT INTO transactions (user_id, type, amount, balance_after, meta, created_at) VALUES (?, 'deposit', ?, ?, ?, NOW())", [
-                $userId, $gross, $newBalance, json_encode(['gateway' => 'paypal', 'txn_id' => $txnId]),
-            ]);
+
+            $meta = ['gateway' => 'paypal', 'txn_id' => $txnId];
+            if ($bonus > 0) {
+                $meta['first_deposit_bonus'] = $bonus;
+            }
+
+            $this->db->query(
+                "INSERT INTO transactions (user_id, type, amount, balance_after, meta, created_at)
+                 VALUES (?, 'deposit', ?, ?, ?, NOW())",
+                [$userId, $creditAmount, $newBalance, json_encode($meta)]
+            );
+
+            // Referral bonus to referrer
+            if ($referralPct > 0 && !empty($user['referred_by'])) {
+                $refUser = $this->db->fetch("SELECT id, balance FROM users WHERE id=?", [$user['referred_by']]);
+                if ($refUser) {
+                    $refBonus = round($gross * $referralPct / 100.0, 2);
+                    if ($refBonus > 0) {
+                        $newRefBal = round($refUser['balance'] + $refBonus, 2);
+                        $this->db->query("UPDATE users SET balance=? WHERE id=?", [$newRefBal, $refUser['id']]);
+                        $this->db->query(
+                            "INSERT INTO transactions (user_id, type, amount, balance_after, meta, created_at)
+                             VALUES (?, 'referral_bonus', ?, ?, ?, NOW())",
+                            [$refUser['id'], $refBonus, $newRefBal, json_encode(['from_user_id' => $userId, 'txn_id' => $txnId])]
+                        );
+                    }
+                }
+            }
+
             $this->db->commit();
         } catch (Throwable $e) {
             $this->db->rollback();

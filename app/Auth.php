@@ -23,14 +23,28 @@ class Auth {
         return true;
     }
 
-    public function register(string $email, string $password): bool {
+    public function register(string $email, string $password, ?int $referredBy = null, ?string $name = null): bool {
         $exists = $this->db->fetch("SELECT id FROM users WHERE email = ?", [$email]);
         if ($exists) return false;
         $hash = password_hash($password, PASSWORD_DEFAULT);
         $apiKey = bin2hex(random_bytes(20));
-        $this->db->query("INSERT INTO users (email, password_hash, api_key, role, balance, created_at) VALUES (?, ?, ?, 'user', 0.00, NOW())", [
-            $email, $hash, $apiKey
-        ]);
+
+        // Generate referral code
+        $refCode = null;
+        for ($i = 0; $i < 5; $i++) {
+            $candidate = strtoupper(substr(bin2hex(random_bytes(4)), 0, 8));
+            $row = $this->db->fetch("SELECT id FROM users WHERE referral_code = ?", [$candidate]);
+            if (!$row) {
+                $refCode = $candidate;
+                break;
+            }
+        }
+
+        $this->db->query(
+            "INSERT INTO users (email, password_hash, api_key, role, balance, name, referral_code, referred_by, language, created_at)
+             VALUES (?, ?, ?, 'user', 0.00, ?, ?, ?, 'en', NOW())",
+            [$email, $hash, $apiKey, $name, $refCode, $referredBy]
+        );
         return true;
     }
 

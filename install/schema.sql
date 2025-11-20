@@ -6,7 +6,12 @@ CREATE TABLE IF NOT EXISTS users (
   api_key VARCHAR(80) NOT NULL UNIQUE,
   role ENUM('admin','user') NOT NULL DEFAULT 'user',
   balance DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-  created_at DATETIME NOT NULL
+  name VARCHAR(255) DEFAULT NULL,
+  referral_code VARCHAR(20) UNIQUE,
+  referred_by INT DEFAULT NULL,
+  language VARCHAR(10) DEFAULT 'en',
+  created_at DATETIME NOT NULL,
+  FOREIGN KEY (referred_by) REFERENCES users(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS providers (
@@ -72,6 +77,16 @@ CREATE TABLE IF NOT EXISTS transactions (
   meta TEXT DEFAULT NULL,
   created_at DATETIME NOT NULL,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- User favorites (services)
+CREATE TABLE IF NOT EXISTS favorites (
+  user_id INT NOT NULL,
+  service_id INT NOT NULL,
+  created_at DATETIME NOT NULL,
+  PRIMARY KEY (user_id, service_id),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Password reset tokens

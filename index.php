@@ -63,13 +63,29 @@ switch ($r) {
         break;
 
     case 'register':
+        $refCode = '';
+        if (!empty($_GET['ref'])) {
+            $refCode = trim($_GET['ref']);
+            setcookie('ref', $refCode, time() + 86400 * 30, '/');
+        } elseif (!empty($_COOKIE['ref'])) {
+            $refCode = trim($_COOKIE['ref']);
+        }
+
         if (is_post()) {
             if (!$auth->verifyCsrf($_POST['csrf'] ?? '')) {
                 $error = "Invalid CSRF token.";
             } else {
                 $email = trim($_POST['email'] ?? '');
                 $password = $_POST['password'] ?? '';
-                if ($auth->register($email, $password)) {
+                $name = trim($_POST['name'] ?? '');
+                $referredBy = null;
+                if ($refCode !== '') {
+                    $r = $db->fetch("SELECT id FROM users WHERE referral_code=?", [$refCode]);
+                    if ($r) {
+                        $referredBy = (int)$r['id'];
+                    }
+                }
+                if ($auth->register($email, $password, $referredBy, $name ?: null)) {
                     $auth->login($email, $password);
                     header('Location: index.php?route=dashboard');
                     exit;
@@ -100,12 +116,23 @@ switch ($r) {
 
     case 'services':
         $auth->requireLogin();
+        $user = $auth->user();
         $providers = $api->listProviders();
 
         $q = trim($_GET['q'] ?? '');
         $cat = trim($_GET['cat'] ?? '');
+        $onlyFav = isset($_GET['fav']) && $_GET['fav'] === '1';
+
         $params = [];
-        $sql = "SELECT s.*, p.name AS provider_name FROM services s JOIN providers p ON p.id=s.provider_id WHERE s.active=1";
+        $sql = "SELECT s.*, p.name AS provider_name";
+
+        if ($onlyFav) {
+            $sql .= ", (1) AS is_favorite FROM favorites f JOIN services s ON s.id=f.service_id JOIN providers p ON p.id=s.provider_id WHERE s.active=1 AND f.user_id=?";
+            $params[] = $user['id'];
+        } else {
+            $sql .= ", (SELECT 1 FROM favorites f WHERE f.user_id=? AND f.service_id=s.id) AS is_favorite FROM services s JOIN providers p ON p.id=s.provider_id WHERE s.active=1";
+            $params[] = $user['id'];
+        }
 
         if ($q !== '') {
             $params[] = "%{$q}%";
@@ -117,7 +144,7 @@ switch ($r) {
             $sql .= " AND s.category = ?";
         }
 
-        $sql .= " ORDER BY s.category, s.name ASC LIMIT 500";
+        $sql .= " ORDER BY " . ($onlyFav ? "s.category, s.name" : "is_favorite DESC, s.category, s.name") . " ASC LIMIT 500";
         $services = $db->fetchAll($sql, $params);
 
         $categories = $db->fetchAll("SELECT DISTINCT category FROM services WHERE active=1 ORDER BY category ASC");
@@ -487,9 +514,38 @@ switch ($r) {
 
     case 'pricing':
         $auth->requireLogin();
+        $user = $auth->user();
         // Fetch all active services; view will group by category and show top items
-        $services = $db->fetchAll("SELECT s.*, p.name AS provider_name FROM services s JOIN providers p ON p.id=s.provider_id WHERE s.active=1 ORDER BY s.category ASC, s.rate ASC, s.name ASC LIMIT 1000");
+        $services = $db->fetchAll(
+            "SELECT s.*, p.name AS provider_name,
+                    (SELECT 1 FROM favorites f WHERE f.user_id=? AND f.service_id=s.id) AS is_favorite
+             FROM services s
+             JOIN providers p ON p.id=s.provider_id
+             WHERE s.active=1
+             ORDER BY s.category ASC, s.rate ASC, s.name ASC
+             LIMIT 1000",
+            [$user['id']]
+        );
         include __DIR__ . '/views/pricing.php';
+        break;
+
+    case 'favorite_toggle':
+        $auth->requireLogin();
+        if (!is_post() || !$auth->verifyCsrf($_POST['csrf'] ?? '')) {
+            header('Location: index.php?route=services');
+            break;
+        }
+        $user = $auth->user();
+        $serviceId = (int)($_POST['service_id'] ?? 0);
+        if ($serviceId) {
+            $exists = $db->fetch("SELECT 1 FROM favorites WHERE user_id=? AND service_id=?", [$user['id'], $serviceId]);
+            if ($exists) {
+                $db->query("DELETE FROM favorites WHERE user_id=? AND service_id=?", [$user['id'], $serviceId]);
+            } else {
+                $db->query("INSERT IGNORE INTO favorites (user_id, service_id, created_at) VALUES (?, ?, NOW())", [$user['id'], $serviceId]);
+            }
+        }
+        header('Location: index.php?route=services');
         break;
 
     case 'api':

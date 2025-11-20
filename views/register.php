@@ -7,6 +7,10 @@
     <input type="hidden" name="csrf" value="<?=h($csrf)?>">
     <div class="grid">
       <div>
+        <label>Name (optional)</label>
+        <input type="text" name="name" placeholder="Your name">
+      </div>
+      <div>
         <label>Email</label>
         <input type="email" name="email" required>
       </div>

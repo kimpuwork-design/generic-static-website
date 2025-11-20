@@ -25,7 +25,7 @@ ksort($grouped);
             </li>
           <?php endforeach; ?>
         </ul>
-        <div style="margin-top:.6rem;">
+        <div style="margin-top:.6rem; display:flex; gap:.4rem; flex-wrap:wrap;">
           <a class="btn btn-outline" href="index.php?route=services&amp;cat=<?=h($cat)?>">Explore</a>
         </div>
       </div>

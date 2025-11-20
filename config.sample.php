@@ -30,6 +30,10 @@ return [
             // 'ipn_verify_url' => 'https://ipnpb.sandbox.paypal.com/cgi-bin/webscr',
         ],
     ],
+    'promotions' => [
+        'first_deposit_bonus_percent' => 0.0, // extra % credited on first completed deposit
+        'referral_bonus_percent' => 0.0,      // % of referred user's deposits credited to referrer
+    ],
     // Optional email settings for forgot-password delivery
     'mail' => [
         'enabled' => false,

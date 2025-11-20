@@ -49,6 +49,11 @@
                     data-min="<?=h($s['min'])?>"
                     data-max="<?=h($s['max'])?>"
             >Quick</button>
+            <form method="post" action="index.php?route=favorite_toggle" style="display:inline;">
+              <input type="hidden" name="csrf" value="<?=h($csrf)?>">
+              <input type="hidden" name="service_id" value="<?=h($s['id'])?>">
+              <button class="btn btn-outline" type="submit"><?=!empty($s['is_favorite']) ? 'Unfavorite' : 'Favorite'?></button>
+            </form>
           </td>
         </tr>
       <?php endforeach; ?>
