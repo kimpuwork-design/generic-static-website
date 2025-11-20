@@ -1,0 +1,133 @@
+-- Schema for SMM Panel
+CREATE TABLE IF NOT EXISTS users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  api_key VARCHAR(80) NOT NULL UNIQUE,
+  role ENUM('admin','user') NOT NULL DEFAULT 'user',
+  balance DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  name VARCHAR(255) DEFAULT NULL,
+  referral_code VARCHAR(20) UNIQUE,
+  referred_by INT DEFAULT NULL,
+  language VARCHAR(10) DEFAULT 'en',
+  created_at DATETIME NOT NULL,
+  FOREIGN KEY (referred_by) REFERENCES users(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS providers (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  base_url VARCHAR(255) NOT NULL,
+  api_key VARCHAR(255) NOT NULL,
+  markup_percent DECIMAL(5,2) NOT NULL DEFAULT 0.00,
+  active TINYINT(1) NOT NULL DEFAULT 1,
+  options MEDIUMTEXT DEFAULT NULL,
+  created_at DATETIME NOT NULL,
+  last_ping_at DATETIME DEFAULT NULL,
+  last_ping_ok TINYINT(1) DEFAULT NULL,
+  last_sync_at DATETIME DEFAULT NULL,
+  last_sync_count INT DEFAULT NULL,
+  last_error TEXT DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS services (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  provider_id INT NOT NULL,
+  external_service_id VARCHAR(50) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  category VARCHAR(255) NOT NULL,
+  rate DECIMAL(10,4) NOT NULL,
+  min INT NOT NULL,
+  max INT NOT NULL,
+  type VARCHAR(50) NOT NULL DEFAULT 'default',
+  active TINYINT(1) NOT NULL DEFAULT 1,
+  created_at DATETIME NOT NULL,
+  FOREIGN KEY (provider_id) REFERENCES providers(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS orders (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  service_id INT NOT NULL,
+  link TEXT NOT NULL,
+  quantity INT NOT NULL,
+  status VARCHAR(50) NOT NULL DEFAULT 'pending',
+  charge DECIMAL(10,4) NOT NULL DEFAULT 0.0000,
+  provider_order_id VARCHAR(50) DEFAULT NULL,
+  created_at DATETIME NOT NULL,
+  updated_at DATETIME DEFAULT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS deposits (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  amount DECIMAL(10,2) NOT NULL,
+  method VARCHAR(50) NOT NULL,
+  status VARCHAR(50) NOT NULL DEFAULT 'pending',
+  txn_id VARCHAR(100) DEFAULT NULL,
+  raw_payload MEDIUMTEXT DEFAULT NULL,
+  created_at DATETIME NOT NULL,
+  updated_at DATETIME DEFAULT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS transactions (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  type VARCHAR(50) NOT NULL,
+  amount DECIMAL(10,2) NOT NULL,
+  balance_after DECIMAL(10,2) NOT NULL,
+  meta TEXT DEFAULT NULL,
+  created_at DATETIME NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- User favorites (services)
+CREATE TABLE IF NOT EXISTS favorites (
+  user_id INT NOT NULL,
+  service_id INT NOT NULL,
+  created_at DATETIME NOT NULL,
+  PRIMARY KEY (user_id, service_id),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Password reset tokens
+CREATE TABLE IF NOT EXISTS password_resets (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  token VARCHAR(64) NOT NULL UNIQUE,
+  code VARCHAR(6) NOT NULL,
+  expires_at DATETIME NOT NULL,
+  used_at DATETIME DEFAULT NULL,
+  created_at DATETIME NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Support tickets
+CREATE TABLE IF NOT EXISTS tickets (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT DEFAULT NULL,
+  email VARCHAR(255) DEFAULT NULL,
+  subject VARCHAR(255) NOT NULL,
+  message MEDIUMTEXT NOT NULL,
+  status ENUM('open','closed') NOT NULL DEFAULT 'open',
+  created_at DATETIME NOT NULL,
+  updated_at DATETIME NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- OAuth providers settings
+CREATE TABLE IF NOT EXISTS oauth_providers (
+  provider VARCHAR(50) PRIMARY KEY,
+  enabled TINYINT(1) NOT NULL DEFAULT 0,
+  client_id VARCHAR(255) DEFAULT NULL,
+  client_secret VARCHAR(255) DEFAULT NULL,
+  redirect_uri VARCHAR(255) DEFAULT NULL,
+  updated_at DATETIME NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE INDEX idx_orders_status ON orders(status);
+CREATE INDEX idx_services_provider ON services(provider_id);
