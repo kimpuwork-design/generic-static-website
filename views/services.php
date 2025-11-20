@@ -20,6 +20,14 @@
           <?php endforeach; ?>
         </select>
       </div>
+      <div>
+        <label>Favorites</label>
+        <?php $fav = $_GET['fav'] ?? ''; ?>
+        <select name="fav">
+          <option value="">All services</option>
+          <option value="1" <?=($fav==='1'?'selected':'')?>>Only favorites</option>
+        </select>
+      </div>
     </div>
     <div style="margin-top:.6rem;">
       <button class="btn" type="submit">Apply Filters</button>

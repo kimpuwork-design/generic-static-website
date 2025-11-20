@@ -8,7 +8,18 @@ class ProviderAPI {
         $this->config = $config;
     }
 
+    /**
+     * List all providers with full info (including health fields).
+     * Use this in admin; for user-facing lists, filter active only in SQL.
+     */
     public function listProviders(): array {
+        return $this->db->fetchAll("SELECT * FROM providers ORDER BY id DESC");
+    }
+
+    /**
+     * List only active providers (for user services).
+     */
+    public function listActiveProviders(): array {
         return $this->db->fetchAll("SELECT * FROM providers WHERE active = 1 ORDER BY id DESC");
     }
 
@@ -166,56 +177,74 @@ class ProviderAPI {
         if (!$provider) throw new RuntimeException("Provider not found");
 
         $opt = $this->opts($provider);
-        $data = $this->providerRequest($provider, [], 'services');
-
-        // Locate services list
-        $services = null;
-        $path = $this->servicesPath($opt);
-        if ($path) {
-            $services = $this->getPath($data, $path);
-        }
-        if ($services === null) {
-            if (isset($data['data'])) $services = $data['data'];
-            elseif (isset($data['services'])) $services = $data['services'];
-            else $services = $data;
-        }
-        if (!is_array($services)) {
-            throw new RuntimeException("Provider services not found");
-        }
-
-        // Mapping
-        $map = (array)($opt['service_map'] ?? []);
         $count = 0;
-        foreach ($services as $svc) {
-            if (!is_array($svc)) continue;
-            $externalId = (string)$this->firstValue($svc, $map['id'] ?? ['service','id']);
-            if (!$externalId) continue;
 
-            $name = (string)$this->firstValue($svc, $map['name'] ?? 'name');
-            if ($name === '') $name = 'Service ' . $externalId;
+        try {
+            $data = $this->providerRequest($provider, [], 'services');
 
-            $category = (string)$this->firstValue($svc, $map['category'] ?? ['category','type']);
-            if ($category === '') $category = 'General';
-
-            $rate = (float)$this->firstValue($svc, $map['rate'] ?? 'rate');
-            $min = (int)$this->firstValue($svc, $map['min'] ?? 'min');
-            $max = (int)$this->firstValue($svc, $map['max'] ?? 'max');
-            $type = (string)$this->firstValue($svc, $map['type'] ?? 'type');
-            if ($type === '') $type = 'default';
-
-            $exists = $this->db->fetch("SELECT id FROM services WHERE provider_id=? AND external_service_id=?", [$providerId, $externalId]);
-            if ($exists) {
-                $this->db->query("UPDATE services SET name=?, category=?, rate=?, min=?, max=?, type=?, active=1 WHERE id=?", [
-                    $name, $category, $rate, $min, $max, $type, $exists['id']
-                ]);
-            } else {
-                $this->db->query("INSERT INTO services (provider_id, external_service_id, name, category, rate, min, max, type, active, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, NOW())", [
-                    $providerId, $externalId, $name, $category, $rate, $min, $max, $type
-                ]);
+            // Locate services list
+            $services = null;
+            $path = $this->servicesPath($opt);
+            if ($path) {
+                $services = $this->getPath($data, $path);
             }
-            $count++;
+            if ($services === null) {
+                if (isset($data['data'])) $services = $data['data'];
+                elseif (isset($data['services'])) $services = $data['services'];
+                else $services = $data;
+            }
+            if (!is_array($services)) {
+                throw new RuntimeException("Provider services not found");
+            }
+
+            // Mapping
+            $map = (array)($opt['service_map'] ?? []);
+            foreach ($services as $svc) {
+                if (!is_array($svc)) continue;
+                $externalId = (string)$this->firstValue($svc, $map['id'] ?? ['service','id']);
+                if (!$externalId) continue;
+
+                $name = (string)$this->firstValue($svc, $map['name'] ?? 'name');
+                if ($name === '') $name = 'Service ' . $externalId;
+
+                $category = (string)$this->firstValue($svc, $map['category'] ?? ['category','type']);
+                if ($category === '') $category = 'General';
+
+                $rate = (float)$this->firstValue($svc, $map['rate'] ?? 'rate');
+                $min = (int)$this->firstValue($svc, $map['min'] ?? 'min');
+                $max = (int)$this->firstValue($svc, $map['max'] ?? 'max');
+                $type = (string)$this->firstValue($svc, $map['type'] ?? 'type');
+                if ($type === '') $type = 'default';
+
+                $exists = $this->db->fetch("SELECT id FROM services WHERE provider_id=? AND external_service_id=?", [$providerId, $externalId]);
+                if ($exists) {
+                    $this->db->query("UPDATE services SET name=?, category=?, rate=?, min=?, max=?, type=?, active=1 WHERE id=?", [
+                        $name, $category, $rate, $min, $max, $type, $exists['id']
+                    ]);
+                } else {
+                    $this->db->query("INSERT INTO services (provider_id, external_service_id, name, category, rate, min, max, type, active, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, NOW())", [
+                        $providerId, $externalId, $name, $category, $rate, $min, $max, $type
+                    ]);
+                }
+                $count++;
+            }
+
+            // Update provider health on success
+            $this->db->query(
+                "UPDATE providers SET last_sync_at=NOW(), last_sync_count=?, last_error=NULL WHERE id=?",
+                [$count, $providerId]
+            );
+
+            return $count;
+        } catch (Throwable $e) {
+            // Record error for admin health view
+            $msg = substr($e->getMessage(), 0, 500);
+            $this->db->query(
+                "UPDATE providers SET last_sync_at=NOW(), last_error=? WHERE id=?",
+                [$msg, $providerId]
+            );
+            throw $e;
         }
-        return $count;
     }
 
     private function firstValue(array $svc, $keySpec) {
@@ -332,58 +361,32 @@ class ProviderAPI {
     public function pingProvider(int $id): array {
         $provider = $this->getProvider($id);
         if (!$provider) throw new RuntimeException("Provider not found");
-        $data = $this->providerRequest($provider, [], 'services');
-        $opt = $this->opts($provider);
-        $services = null;
-        $path = $this->servicesPath($opt);
-        if ($path) $services = $this->getPath($data, $path);
-        if ($services === null) {
-            if (isset($data['data'])) $services = $data['data'];
-            elseif (isset($data['services'])) $services = $data['services'];
-            else $services = $data;
-        }
-        $count = is_array($services) ? count($services) : 0;
-        return ['ok' => true, 'services' => $count];
-    }
-}
-
-    public function updateOrderStatus(int $orderId): void {
-        $order = $this->db->fetch("SELECT o.*, s.external_service_id, s.provider_id FROM orders o JOIN services s ON s.id=o.service_id WHERE o.id=?", [$orderId]);
-        if (!$order) return;
-        $provider = $this->getProvider((int)$order['provider_id']);
-        if (!$provider) return;
-
-        $resp = $this->providerRequest($provider, [
-            'action' => 'status',
-            'order' => $order['provider_order_id'],
-        ]);
-
-        $status = $resp['status'] ?? $order['status'];
-        $remains = $resp['remains'] ?? null;
-        $charge = isset($resp['charge']) ? (float)$resp['charge'] : null;
-
-        // Update order status
-        $this->db->query("UPDATE orders SET status=?, updated_at=NOW() WHERE id=?", [$status, $orderId]);
-
-        // Handle partial refunds (optional)
-        if ($status === 'partial' && $charge !== null) {
-            // If provider charged less than what we charged the user, refund the difference to wallet
-            $ourCharge = (float)$order['charge'];
-            if ($charge < $ourCharge) {
-                $diff = round($ourCharge - $charge, 2);
-                $user = $this->db->fetch("SELECT id, balance FROM users WHERE id=?", [$order['user_id']]);
-                $newBalance = round($user['balance'] + $diff, 2);
-                $this->db->begin();
-                try {
-                    $this->db->query("UPDATE users SET balance=? WHERE id=?", [$newBalance, $order['user_id']]);
-                    $this->db->query("INSERT INTO transactions (user_id, type, amount, balance_after, meta, created_at) VALUES (?, 'refund', ?, ?, ?, NOW())", [
-                        $order['user_id'], $diff, $newBalance, json_encode(['order_id' => $orderId, 'remains' => $remains]),
-                    ]);
-                    $this->db->commit();
-                } catch (Throwable $e) {
-                    $this->db->rollback();
-                }
+        try {
+            $data = $this->providerRequest($provider, [], 'services');
+            $opt = $this->opts($provider);
+            $services = null;
+            $path = $this->servicesPath($opt);
+            if ($path) $services = $this->getPath($data, $path);
+            if ($services === null) {
+                if (isset($data['data'])) $services = $data['data'];
+                elseif (isset($data['services'])) $services = $data['services'];
+                else $services = $data;
             }
+            $count = is_array($services) ? count($services) : 0;
+
+            $this->db->query(
+                "UPDATE providers SET last_ping_at=NOW(), last_ping_ok=1, last_error=NULL WHERE id=?",
+                [$id]
+            );
+
+            return ['ok' => true, 'services' => $count];
+        } catch (Throwable $e) {
+            $msg = substr($e->getMessage(), 0, 500);
+            $this->db->query(
+                "UPDATE providers SET last_ping_at=NOW(), last_ping_ok=0, last_error=? WHERE id=?",
+                [$msg, $id]
+            );
+            throw $e;
         }
     }
 }

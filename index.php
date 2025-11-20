@@ -117,7 +117,7 @@ switch ($r) {
     case 'services':
         $auth->requireLogin();
         $user = $auth->user();
-        $providers = $api->listProviders();
+        $providers = $api->listActiveProviders();
 
         $q = trim($_GET['q'] ?? '');
         $cat = trim($_GET['cat'] ?? '');

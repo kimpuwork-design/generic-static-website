@@ -22,7 +22,12 @@ CREATE TABLE IF NOT EXISTS providers (
   markup_percent DECIMAL(5,2) NOT NULL DEFAULT 0.00,
   active TINYINT(1) NOT NULL DEFAULT 1,
   options MEDIUMTEXT DEFAULT NULL,
-  created_at DATETIME NOT NULL
+  created_at DATETIME NOT NULL,
+  last_ping_at DATETIME DEFAULT NULL,
+  last_ping_ok TINYINT(1) DEFAULT NULL,
+  last_sync_at DATETIME DEFAULT NULL,
+  last_sync_count INT DEFAULT NULL,
+  last_error TEXT DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS services (
